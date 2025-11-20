@@ -1,16 +1,10 @@
 {
   "version": 2,
-  "builds": [{ "src": "dist/**/*", "use": "@vercel/static" }],
-  "routes": [
+  "builds": [
     {
-      "src": "/assets/(.*)",
-      "headers": { "Cache-Control": "public, max-age=31536000, immutable" },
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "src": "dist/**",
+      "use": "@vercel/static"
     }
   ],
-  "outputDirectory": "dist"
+  "routes": [{ "src": "/(.*)", "dest": "/dist/$1" }]
 }
