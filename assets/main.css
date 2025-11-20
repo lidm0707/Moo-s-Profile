@@ -1,0 +1,446 @@
+/* App-wide styling */
+body {
+    background-color: #0f1116;
+    color: #ffffff;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    background-color: #3730a3;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    background-color: #4f46e5;
+}
+
+.theme-toggle.light-mode {
+    background-color: #818cf8;
+    color: #1f2937;
+}
+
+.theme-toggle.light-mode:hover {
+    background-color: #a5b4fc;
+}
+
+/* Profile Header */
+.profile-header {
+    background-color: #1a1d26;
+    padding: 3rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid #2a2d3a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header.light-mode {
+    background-color: #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.profile-info h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: #a78bfa;
+}
+
+.profile-info p {
+    max-width: 800px;
+    margin: 0 auto 1.5rem;
+    font-size: 1.1rem;
+    color: #d1d5db;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.social-links a {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    background-color: #3730a3;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.social-links a:hover {
+    background-color: #4f46e5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+}
+
+/* Navigation */
+.profile-nav {
+    display: flex;
+    justify-content: center;
+    background-color: #1f2937;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-nav.light-mode {
+    background-color: #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.nav-link {
+    color: #d1d5db;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    margin: 0 0.5rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    color: #a78bfa;
+    background-color: #374151;
+}
+
+/* Current page navigation styling */
+.nav-link.active {
+    color: #ffffff;
+    background-color: #4f46e5;
+    font-weight: 600;
+}
+
+/* Main Content */
+.profile-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Interests Section */
+.interests-section {
+    margin-bottom: 2rem;
+}
+
+.interests-section.light-mode {
+    color: #1f2937;
+}
+
+.interests-section h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #a78bfa;
+    border-bottom: 2px solid #3730a3;
+    padding-bottom: 0.5rem;
+}
+
+.about-content {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.about-content.light-mode {
+    color: #374151;
+}
+
+.about-content p {
+    margin-bottom: 1.5rem;
+}
+
+.goals h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #8b5cf6;
+}
+
+.goals ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.goals li {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.goals li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #8b5cf6;
+}
+
+.interests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.interests-grid h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #8b5cf6;
+    grid-column: 1 / -1;
+}
+
+.interest-card {
+    background-color: #1f2937;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.interest-card.light-mode {
+    background-color: #f9fafb;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.interest-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.interest-card h4 {
+    margin-bottom: 0.5rem;
+    color: #a78bfa;
+    font-size: 1.2rem;
+}
+
+.interest-card p {
+    color: #d1d5db;
+    margin: 0;
+}
+
+/* Work History Section */
+.work-history-section h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #a78bfa;
+    border-bottom: 2px solid #3730a3;
+    padding-bottom: 0.5rem;
+}
+
+.work-history-section.light-mode h2 {
+    color: #7c3aed;
+    border-bottom: 2px solid #a78bfa;
+}
+
+.timeline {
+    position: relative;
+    padding: 2rem 0;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background-color: #3730a3;
+}
+
+.timeline.light-mode::before {
+    background-color: #a78bfa;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 3rem;
+    margin-bottom: 3rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.timeline-item:nth-child(1) {
+    animation-delay: 0.1s;
+}
+.timeline-item:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.timeline-item:nth-child(3) {
+    animation-delay: 0.3s;
+}
+.timeline-item:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -10px;
+    top: 5px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #8b5cf6;
+    border: 4px solid #1a1d26;
+    box-shadow: 0 0 0 4px #3730a3;
+}
+
+.timeline-content {
+    background-color: #1f2937;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-content.light-mode {
+    background-color: #f9fafb;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.timeline-content h3 {
+    margin-top: 0;
+    color: #a78bfa;
+}
+
+.timeline-date {
+    color: #8b5cf6;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.timeline-content ul {
+    padding-left: 1.5rem;
+    margin-top: 1rem;
+}
+
+.timeline-content li {
+    margin-bottom: 0.5rem;
+}
+
+/* Footer */
+.profile-footer {
+    background-color: #1a1d26;
+    color: #9ca3af;
+    text-align: center;
+    padding: 1.5rem;
+    border-top: 1px solid #2a2d3a;
+    margin-top: 3rem;
+}
+
+.profile-footer.light-mode {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border-top: 1px solid #e5e7eb;
+}
+
+.profile-footer p {
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-header {
+        padding: 2rem 1rem;
+    }
+
+    .profile-info h1 {
+        font-size: 2rem;
+    }
+
+    .social-links {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .profile-nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-link {
+        margin: 0.25rem 0;
+        text-align: center;
+    }
+
+    .interests-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .timeline::before {
+        left: 15px;
+    }
+
+    .timeline-item {
+        padding-left: 2.5rem;
+    }
+
+    .timeline-dot {
+        left: 5px;
+    }
+}
+
+/* Skills Section */
+.skills-section {
+    margin-top: 2rem;
+}
+
+.skills-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #8b5cf6;
+}
+
+.skill-category {
+    margin-bottom: 1.5rem;
+}
+
+.skill-category h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+    color: #a78bfa;
+}
+
+.skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.skill-tag {
+    background-color: #3730a3;
+    color: #ffffff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.light-mode .skill-tag {
+    background-color: #8b5cf6;
+}
