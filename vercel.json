@@ -2,6 +2,6 @@
   "version": 2,
   "public": true,
   "cleanUrls": true,
-  "builds": [{ "src": "dist/**/*", "use": "@vercel/static" }],
-  "routes": [{ "src": "/(.*)", "dest": "/dist/index.html" }]
+  "outputDirectory": "dist",
+  "routes": [{ "src": "/(.*)", "dest": "/index.html" }]
 }
