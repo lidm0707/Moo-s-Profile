@@ -9,9 +9,9 @@ title = "Moo's Profile"
 [web.resource]
 
 # Additional CSS style files
-style = ["assets/main.css"]
-# style = []
-preload = true
+# style = ["assets/main.css"]
+style = []
+# preload = true
 # Additional JavaScript files
 script = []
 
