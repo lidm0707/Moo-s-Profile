@@ -1,16 +1,17 @@
 [application]
-
+assets = "assets"
 [web.app]
-out_dir = "dist"
 # HTML title tag content
 title = "Moo's Profile"
+# base_path = "/"
 
 # include `assets` in web platform
 [web.resource]
 
 # Additional CSS style files
+# style = ["assets/main.css"]
 style = []
-
+# preload = true
 # Additional JavaScript files
 script = []
 

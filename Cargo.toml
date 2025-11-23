@@ -19,3 +19,9 @@ default = ["web"]
 web = ["dioxus/web"]
 desktop = ["dioxus/desktop"]
 mobile = ["dioxus/mobile"]
+
+# [profile.release]
+# opt-level = "z"
+# lto = true
+# codegen-units = 1
+# strip = "symbols"
