@@ -38,9 +38,9 @@ fn ProfileLayout() -> Element {
         // Theme toggle button
         button {
             class: if dark_mode() { "theme-toggle" } else { "theme-toggle light-mode" },
-            onclick: move |_| {
-                *dark_mode.write() = !dark_mode();
-            },
+            // onclick: move |_| {
+            //     *dark_mode.write() = !dark_mode();
+            // },
             if dark_mode() {
                 "🌙"
             } else {
