@@ -244,7 +244,7 @@ fn WorkHistory() -> Element {
                     h3 { "General Manager" }
                     div {
                         class: "timeline-date",
-                        "ม.ค. 2022 - ปัจจุบัน · 3 ปี 11 เดือน"
+                        "Jan 2022 – Present · 3 years 11 months"
                     }
                     p { "Leading company-wide digital transformation initiatives and IT strategy management, with a focus on operational efficiency and technology adoption." }
                     ul {
@@ -266,7 +266,7 @@ fn WorkHistory() -> Element {
                     h3 { "Product Owner" }
                     div {
                         class: "timeline-date",
-                        "ธ.ค. 2018 - ธ.ค. 2021 · 3 ปี 1 เดือน"
+                        "Dec 2018 – Dec 2021 · 3 years 1 month"
                     }
                     p { "Managing product roadmap and delivery lifecycle, bridging business objectives with technical implementation and user needs." }
                     ul {
