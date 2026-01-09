@@ -5,13 +5,13 @@ use dioxus::prelude::*;
 #[component]
 pub fn ThemeToggle() -> Element {
     let mut dark_mode = use_context::<Signal<bool>>();
-
+    dark_mode.set(true);
     rsx! {
         button {
             class: if dark_mode() { "theme-toggle" } else { "theme-toggle light-mode" },
-            onclick: move |_| {
-                *dark_mode.write() = !dark_mode();
-            },
+            // onclick: move |_| {
+            //     *dark_mode.write() = !dark_mode();
+            // },
             if dark_mode() {
                 "🌙"
             } else {
