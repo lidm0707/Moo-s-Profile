@@ -49,12 +49,33 @@ body {
     text-align: center;
     border-bottom: 1px solid #2a2d3a;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: overlay;
 }
 
 .profile-header.light-mode {
     background-color: #f3f4f6;
     border-bottom: 1px solid #e5e7eb;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: soft-light;
+}
+
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #3730a3;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.light-mode .profile-image {
+    border-color: #8b5cf6;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .profile-info h1 {
@@ -443,4 +464,21 @@ body {
 
 .light-mode .skill-tag {
     background-color: #8b5cf6;
+}
+.glow-text {
+    display: inline-block;
+    padding: 0.5em 1em;
+    color: #fff;
+
+    background: linear-gradient(
+        135deg,
+        rgba(168, 85, 247, 0.35),
+        rgba(99, 102, 241, 0.35)
+    );
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 0 20px rgba(168, 85, 247, 0.8),
+        0 0 60px rgba(99, 102, 241, 0.6);
 }

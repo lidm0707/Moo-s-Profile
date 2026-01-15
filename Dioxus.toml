@@ -11,6 +11,13 @@ title = "Moo's Profile"
 # Additional CSS style files
 # style = ["assets/main.css"]
 style = []
+
+# Additional static files
+static = [
+    "assets/bg_profile.jpg",
+    "assets/profile.jpg",
+]
+
 # preload = true
 # Additional JavaScript files
 script = []
