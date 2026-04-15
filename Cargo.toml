@@ -3,7 +3,7 @@ name = "my_profile"
 version = "0.1.0"
 authors = ["lidm0707 <lightdemon17@gmail.com>"]
 description = "A professional profile page built with Dioxus"
-edition = "2021"
+edition = "2024"
 repository = "https://github.com/lidm0707/my_profile"
 license = "MIT"
 keywords = ["dioxus", "rust", "profile", "portfolio"]
@@ -12,16 +12,13 @@ categories = ["web-programming"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dioxus = { version = "0.7.2", features = ["router"] }
+dioxus = { version = "0.7", features = ["router"] }
+content_sdk = {git = "https://github.com/lidm0707/content_profile",package = "content_sdk"}
+chrono = "0.4.44"
 
 [features]
 default = ["web"]
 web = ["dioxus/web"]
-desktop = ["dioxus/desktop"]
-mobile = ["dioxus/mobile"]
 
-# [profile.release]
-# opt-level = "z"
-# lto = true
-# codegen-units = 1
-# strip = "symbols"
+[build-dependencies]
+dotenvy = "0.15"

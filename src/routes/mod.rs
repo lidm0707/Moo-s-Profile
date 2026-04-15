@@ -1,4 +1,6 @@
 use crate::components::{Footer, Header, Nav, ThemeToggle};
+use content_sdk::contexts::{ContentContext, ContentTagsContext, TagContext};
+use content_sdk::utils::config::Config;
 use dioxus::prelude::*;
 
 /// Route definitions for the application
@@ -16,6 +18,14 @@ pub enum Route {
     // Work history route
     #[route("/work-history")]
     WorkHistory {},
+
+    // Content route with pagination
+    #[route("/content")]
+    ContentPage {},
+
+    // Content detail route for viewing individual content
+    #[route("/content/:slug")]
+    ContentDetail { slug: String },
 }
 
 /// ProfileLayout component that wraps all pages with common UI elements
@@ -23,8 +33,22 @@ pub enum Route {
 /// Provides dark mode context to all child components
 #[component]
 pub fn ProfileLayout() -> Element {
-    let mut dark_mode = use_signal(|| true);
+    let dark_mode = use_signal(|| true);
     use_context_provider(|| dark_mode);
+
+    // Create config from environment variables
+    let config = use_hook(|| {
+        let mode = env!("APP_MODE");
+        let supabase_url = env!("SUPABASE_URL");
+        let supabase_anon_key = env!("SUPABASE_ANON_KEY");
+
+        Config::new(mode, supabase_url, supabase_anon_key, None)
+    });
+
+    // Provide contexts to all child routes
+    use_context_provider(|| ContentContext::new(Some(config.clone())));
+    use_context_provider(|| TagContext::new(Some(config.clone())));
+    use_context_provider(|| ContentTagsContext::new(Some(config)));
 
     rsx! {
         // Theme toggle button
@@ -48,9 +72,11 @@ pub fn ProfileLayout() -> Element {
 }
 
 // Re-export route components for easy importing
+pub use content::{ContentDetail, ContentPage};
 pub use interests::Interests;
 pub use work_history::WorkHistory;
 
 // Import the individual route page components
+mod content;
 mod interests;
 mod work_history;

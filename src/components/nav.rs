@@ -22,6 +22,12 @@ pub fn Nav() -> Element {
                 id: "work-history-link",
                 "Work History"
             }
+            Link {
+                to: Route::ContentPage {},
+                class: "nav-link",
+                id: "content-link",
+                "ContentPage"
+            }
         }
     }
 }
