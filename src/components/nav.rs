@@ -26,7 +26,7 @@ pub fn Nav() -> Element {
                 to: Route::ContentPage {},
                 class: "nav-link",
                 id: "content-link",
-                "ContentPage"
+                "Content"
             }
         }
     }

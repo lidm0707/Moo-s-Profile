@@ -229,7 +229,6 @@ fn ContentCard(item: ContentModel, content_tags_ctx: ContentTagsContext) -> Elem
     // Determine if tags are loading
     let tags_loading = use_memo(move || tags_resource().is_none());
 
-    let excerpt = generate_excerpt(&item.body);
     let created_at = item
         .created_at
         .map(|dt| dt.format("%Y-%m-%d").to_string())
@@ -242,10 +241,6 @@ fn ContentCard(item: ContentModel, content_tags_ctx: ContentTagsContext) -> Elem
                 class: "content-card-header",
                 h3 { class: "content-card-title", "{item.title}" }
                 time { class: "content-card-date", "{created_at}" }
-            }
-            p {
-                class: "content-card-excerpt",
-                "{excerpt}"
             }
             div {
                 class: "content-card-tags",
@@ -345,13 +340,14 @@ pub fn ContentDetail(slug: String) -> Element {
                             header {
                                 class: "content-detail-header",
                                 h1 { class: "content-detail-title", "{content.title}" }
-                                time {
-                                    class: "content-detail-date",
-                                    {
-                                        content.created_at
-                                            .map(|dt| dt.format("%B %e, %Y").to_string())
-                                            .unwrap_or_else(|| Utc::now().format("%B %e, %Y").to_string())
-                                    }
+
+                            }
+                            time {
+                                class: "content-detail-date",
+                                {
+                                    content.created_at
+                                        .map(|dt| dt.format("%B %e, %Y").to_string())
+                                        .unwrap_or_else(|| Utc::now().format("%B %e, %Y").to_string())
                                 }
                             }
                             div {
