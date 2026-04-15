@@ -1,13 +1,10 @@
 {
   "version": 2,
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/dist/public/index.html" }
-  ],
-  "headers": [
+  "builds": [
     {
-      "source": "/(.*)\\.wasm",
-      "headers": [{ "key": "Content-Type", "value": "application/wasm" }]
+      "src": "dist/public/**",
+      "use": "@vercel/static"
     }
-  ]
+  ],
+  "routes": [{ "src": "/(.*)", "dest": "/dist/public/$1" }]
 }
