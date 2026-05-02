@@ -3,8 +3,10 @@ use content_sdk::models::Content as ContentModel;
 
 use dioxus::prelude::*;
 
+use crate::components::Modal;
 use crate::features::content::content_card::ContentCard;
 use crate::features::content::hooks::use_tags::use_tags;
+use crate::features::content::modal_content::ModalContentBody;
 use crate::features::content::tag_filter_bar::TagFilterBar;
 
 const HINT_TEXT: &str = "Select a tag to view content";
@@ -15,6 +17,8 @@ pub fn ContentPage() -> Element {
     let mut selected_tag = use_signal(|| None::<i32>);
     let mut tag_content = use_signal(Vec::<ContentModel>::new);
     let mut content_loading = use_signal(|| false);
+    let mut modal_open = use_signal(|| false);
+    let mut selected_content = use_signal(|| None::<ContentModel>);
 
     let tag_ctx = use_context::<TagContext>();
     let content_ctx = use_context::<ContentContext>();
@@ -34,6 +38,13 @@ pub fn ContentPage() -> Element {
             .iter()
             .find(|t| t.id == Some(active_id))
             .map(|t| t.name.clone())
+            .unwrap_or_default()
+    });
+
+    let modal_title = use_memo(move || {
+        selected_content()
+            .as_ref()
+            .map(|c| c.title.clone())
             .unwrap_or_default()
     });
 
@@ -101,6 +112,10 @@ pub fn ContentPage() -> Element {
                                 ContentCard {
                                     item: item.clone(),
                                     content_tags_ctx: content_tags_ctx.clone(),
+                                    on_card_select: move |content: ContentModel| {
+                                        selected_content.set(Some(content));
+                                        modal_open.set(true);
+                                    },
                                 }
                             }
                         }
@@ -111,6 +126,18 @@ pub fn ContentPage() -> Element {
                                 "No content available for this tag"
                             }
                         }
+                    }
+                }
+            }
+
+            Modal {
+                is_open: modal_open,
+                title: modal_title(),
+
+                if let Some(content) = selected_content() {
+                    ModalContentBody {
+                        content: content.clone(),
+                        tags_ctx: content_tags_ctx.clone(),
                     }
                 }
             }

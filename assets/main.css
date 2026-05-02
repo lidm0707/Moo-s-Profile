@@ -947,3 +947,46 @@ body {
 .modal-body {
     padding: 1.5rem;
 }
+
+.content-card-clickable {
+    cursor: pointer;
+}
+
+.content-card-hint {
+    display: inline-block;
+    margin-top: 0.75rem;
+    color: #a78bfa;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.content-card-hint.light-mode {
+    color: #7c3aed;
+}
+
+.modal-content-date {
+    display: block;
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.modal-container.light-mode .modal-content-date {
+    color: #6b7280;
+}
+
+.modal-content-body {
+    color: #d1d5db;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+.modal-content-body.light-mode {
+    color: #374151;
+}
+
+.modal-content-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
