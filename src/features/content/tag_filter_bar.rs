@@ -10,24 +10,26 @@ pub fn TagFilterBar(
 ) -> Element {
     rsx! {
         div {
-            class: "tag-card-grid",
+            class: "tag-bar",
             for tag in tags.iter() {
                 {
                     let tag_id = tag.id;
                     let is_active = selected_tag == tag_id;
                     let class_name = if is_active {
-                        "tag-card tag-card-active"
-                    } else if dark_mode() {
-                        "tag-card"
+                        "tag-chip tag-chip-active"
                     } else {
-                        "tag-card tag-card-light"
+                        "tag-chip"
+                    };
+                    let full_class = if dark_mode() {
+                        class_name.to_string()
+                    } else {
+                        format!("{class_name} tag-chip-light")
                     };
                     rsx! {
                         button {
-                            class: "{class_name}",
+                            class: "{full_class}",
                             onclick: move |_| on_tag_select.call(tag_id),
-                            span { class: "tag-card-icon", "🏷️" }
-                            span { class: "tag-card-name", "{tag.name}" }
+                            "🏷 {tag.name}"
                         }
                     }
                 }

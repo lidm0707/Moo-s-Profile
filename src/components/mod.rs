@@ -10,7 +10,6 @@ pub mod timeline;
 pub use footer::Footer;
 pub use header::Header;
 pub use interest_card::InterestCard;
-pub use modal::Modal;
 pub use nav::Nav;
 pub use skill_tags::SkillTagsGroup;
 pub use theme_toggle::ThemeToggle;

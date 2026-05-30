@@ -14,7 +14,7 @@ pub fn Nav() -> Element {
                 to: Route::Interests {},
                 class: "nav-link",
                 id: "interests-link",
-                "My Interests"
+                "Interests"
             }
             Link {
                 to: Route::WorkHistory {},

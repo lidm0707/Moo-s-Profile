@@ -3,40 +3,37 @@ use content_sdk::contexts::{ContentContext, ContentTagsContext, TagContext};
 use content_sdk::utils::config::Config;
 use dioxus::prelude::*;
 
-/// Route definitions for the application
-/// All routes are defined here with their paths and layout
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
 pub enum Route {
-    // Apply ProfileLayout to all routes
     #[layout(ProfileLayout)]
-
-    // Home route displays Interests page
     #[route("/")]
+    Home {},
+    #[route("/interests")]
     Interests {},
-
-    // Work history route
     #[route("/work-history")]
     WorkHistory {},
-
-    // Content route with pagination
     #[route("/content")]
     ContentPage {},
-
-    // Content detail route for viewing individual content
     #[route("/content/:slug")]
     ContentDetail { slug: String },
 }
 
-/// ProfileLayout component that wraps all pages with common UI elements
-/// This includes theme toggle, header, navigation, and footer
-/// Provides dark mode context to all child components
+#[component]
+fn Home() -> Element {
+    let nav = navigator();
+    use_hook(move || nav.push(Route::ContentPage {}));
+    rsx! {}
+}
+
 #[component]
 pub fn ProfileLayout() -> Element {
     let dark_mode = use_signal(|| true);
     use_context_provider(|| dark_mode);
 
-    // Create config from environment variables
+    let route: Route = use_route();
+    let is_content = matches!(route, Route::ContentPage {} | Route::ContentDetail { .. });
+
     let config = use_hook(|| {
         let mode = env!("APP_MODE");
         let supabase_url = env!("SUPABASE_URL");
@@ -45,38 +42,36 @@ pub fn ProfileLayout() -> Element {
         Config::new(mode, supabase_url, supabase_anon_key, None)
     });
 
-    // Provide contexts to all child routes
     use_context_provider(|| ContentContext::new(Some(config.clone())));
     use_context_provider(|| TagContext::new(Some(config.clone())));
     use_context_provider(|| ContentTagsContext::new(Some(config)));
 
-    rsx! {
-        // Theme toggle button
-        ThemeToggle {}
-
-        // Header with profile information
-        Header {}
-
-        // Navigation menu
-        Nav {}
-
-        // Main content area where child routes are rendered
-        main {
-            class: if dark_mode() { "profile-content" } else { "profile-content light-mode" },
-            Outlet::<Route> {}
+    if is_content {
+        rsx! {
+            Nav {}
+            div {
+                class: if dark_mode() { "content-layout" } else { "content-layout light-mode" },
+                Outlet::<Route> {}
+            }
         }
-
-        // Footer with copyright information
-        Footer {}
+    } else {
+        rsx! {
+            ThemeToggle {}
+            Header {}
+            Nav {}
+            main {
+                class: if dark_mode() { "profile-content" } else { "profile-content light-mode" },
+                Outlet::<Route> {}
+            }
+            Footer {}
+        }
     }
 }
 
-// Re-export route components for easy importing
 pub use content::{ContentDetail, ContentPage};
 pub use interests::Interests;
 pub use work_history::WorkHistory;
 
-// Import the individual route page components
 mod content;
 mod interests;
 mod work_history;
