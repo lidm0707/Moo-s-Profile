@@ -374,7 +374,7 @@ dependencies = [
 [[package]]
 name = "content_sdk"
 version = "0.1.0"
-source = "git+https://github.com/lidm0707/content_profile#0b6d759933267f407d29efee4e5a9b107cca8faf"
+source = "git+https://github.com/lidm0707/content_profile#395ae6726a86276b40e0669a970702e4eb4fa62b"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2732,7 +2732,7 @@ checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
 [[package]]
 name = "supabase_client"
 version = "0.1.0"
-source = "git+https://github.com/lidm0707/content_profile#0b6d759933267f407d29efee4e5a9b107cca8faf"
+source = "git+https://github.com/lidm0707/content_profile#395ae6726a86276b40e0669a970702e4eb4fa62b"
 dependencies = [
  "anyhow",
  "chrono",
