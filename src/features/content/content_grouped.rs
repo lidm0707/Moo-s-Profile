@@ -43,6 +43,12 @@ pub fn ContentPage() -> Element {
     let tags_list = use_memo(move || tags_resource().clone().unwrap_or_default());
     let tags_loaded = use_memo(move || tags_resource().is_some());
 
+    let sorted_content = use_memo(move || {
+        let mut items = tag_content();
+        items.sort_by_key(|item| std::cmp::Reverse(item.created_at));
+        items
+    });
+
     let initial_query = use_context::<Signal<String>>();
 
     let content_ctx_for_effect = content_ctx.clone();
@@ -149,7 +155,7 @@ pub fn ContentPage() -> Element {
                     } else if tag_content().is_empty() {
                         div { class: "empty-state", "No topics for this tag" }
                     } else {
-                        for item in tag_content() {
+                        for item in sorted_content() {
                             {
                                 let is_active = selected_content()
                                     .as_ref()
