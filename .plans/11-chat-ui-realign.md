@@ -29,6 +29,23 @@ add the two highest-value chat UX touches.
 - [x] 4. Add `Document` + `Element` web-sys features for the scroll helper.
 - [x] 5. Validate: `cargo check` && `cargo clippy`.
 
+## Tweak Round 2 (2026-06-27)
+
+Follow-ups after the realign:
+1. Removed the `chat-header` block (bot avatar / "LatCal" title / status).
+2. Fixed input-bar horizontal overflow: added `box-sizing: border-box` to `.chat-input-bar`, `min-width: 0` to `.chat-input`, `flex-shrink: 0` + `box-sizing: border-box` to `.chat-send`.
+3. Fixed the input bar being half-clipped vertically: `min-height: 0` on `.chat-messages` (vertical twin of the `min-width: 0` fix) + `overflow: hidden` on `.chat-app`.
+4. Chat height tuned to `.chat-app { height: 90%; }`.
+5. Persist the transcript in browser `localStorage` (`latcal.chat.v1`) — restore on mount, save on send. Added `serde` + `serde_json` deps and the web-sys `Storage` feature.
+
+### Tasks
+- [x] 10. Remove `.chat-header` block + orphaned CSS.
+- [x] 11. Fix input-bar overflow (`box-sizing` / `min-width` / `flex-shrink`).
+- [x] 12. Fix input-bar vertical clipping (`min-height: 0` on messages).
+- [x] 13. Set `.chat-app { height: 90%; }`.
+- [x] 14. localStorage persistence (load on init, save in `send`).
+- [x] 15. Validate: `cargo check` && `cargo clippy`.
+
 ## Notes
 
 - `window.document()` returns `Option<Document>` in this web-sys version (not `Result`).

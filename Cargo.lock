@@ -1954,6 +1954,8 @@ dependencies = [
  "dioxus",
  "dotenvy",
  "latent-calculator",
+ "serde",
+ "serde_json",
  "wasm-bindgen",
  "web-sys",
 ]

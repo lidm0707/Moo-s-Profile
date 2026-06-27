@@ -1,17 +1,64 @@
 use dioxus::prelude::*;
 use latent_calculator::{Calculator, ParseError};
+use serde::{Deserialize, Serialize};
 
 const USER_AVATAR: Asset = asset!("/assets/profile.jpg");
 const CHAT_LIST_ID: &str = "chat-messages";
 const BOT_SEED_TEXT: &str = "Hi! I'm LatCal \u{1f9ee} \u{2014} ask me math in plain words, e.g. \u{201c}10$ discount 2%\u{201d}.";
 const INPUT_PLACEHOLDER: &str = "ask a math question in plain words\u{2026}";
+const STORAGE_KEY: &str = "latcal.chat.v1";
 
 /// One line in the conversation. `from_user` decides bubble side + avatar.
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
 struct Message {
     id: usize,
     from_user: bool,
     text: String,
+}
+
+fn seed_messages() -> Vec<Message> {
+    vec![Message {
+        id: 0,
+        from_user: false,
+        text: BOT_SEED_TEXT.to_string(),
+    }]
+}
+
+fn next_id_from(msgs: &[Message]) -> usize {
+    msgs.iter().map(|m| m.id).max().map_or(1, |m| m + 1)
+}
+
+/// Restore the transcript from localStorage, falling back to the welcome seed
+/// when storage is unavailable, empty, or holds unparsable data (private
+/// browsing, corrupt entry, schema drift, etc.).
+fn load_messages() -> Vec<Message> {
+    let Some(window) = web_sys::window() else {
+        return seed_messages();
+    };
+    let Ok(Some(storage)) = window.local_storage() else {
+        return seed_messages();
+    };
+    let Ok(Some(json)) = storage.get_item(STORAGE_KEY) else {
+        return seed_messages();
+    };
+    match serde_json::from_str::<Vec<Message>>(&json) {
+        Ok(msgs) if !msgs.is_empty() => msgs,
+        _ => seed_messages(),
+    }
+}
+
+/// Best-effort persist; localStorage may be unavailable or over quota.
+fn save_messages(msgs: &[Message]) {
+    let Some(window) = web_sys::window() else {
+        return;
+    };
+    let Ok(Some(storage)) = window.local_storage() else {
+        return;
+    };
+    let Ok(json) = serde_json::to_string(msgs) else {
+        return;
+    };
+    let _ = storage.set_item(STORAGE_KEY, &json);
 }
 
 fn bot_reply(input: &str) -> String {
@@ -43,18 +90,9 @@ fn scroll_chat_to_bottom() {
 pub fn Chat() -> Element {
     let dark_mode = use_context::<Signal<bool>>();
 
-    let mut messages = use_signal(Vec::<Message>::new);
+    let mut messages = use_signal(load_messages);
     let mut input = use_signal(String::new);
-    let mut next_id: Signal<usize> = use_signal(|| 1);
-
-    // Seed the conversation once.
-    use_hook(|| {
-        messages.write().push(Message {
-            id: 0,
-            from_user: false,
-            text: BOT_SEED_TEXT.to_string(),
-        });
-    });
+    let mut next_id: Signal<usize> = use_signal(|| next_id_from(&messages()));
 
     // Derived from `input` directly — no extra state to keep in sync.
     let can_send = use_memo(move || !input.read().trim().is_empty());
@@ -88,6 +126,7 @@ pub fn Chat() -> Element {
         });
 
         input.write().clear();
+        save_messages(&messages.read());
     };
 
     rsx! {
