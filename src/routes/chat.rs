@@ -2,6 +2,9 @@ use dioxus::prelude::*;
 use latent_calculator::{Calculator, ParseError};
 
 const USER_AVATAR: Asset = asset!("/assets/profile.jpg");
+const CHAT_LIST_ID: &str = "chat-messages";
+const BOT_SEED_TEXT: &str = "Hi! I'm LatCal \u{1f9ee} \u{2014} ask me math in plain words, e.g. \u{201c}10$ discount 2%\u{201d}.";
+const INPUT_PLACEHOLDER: &str = "ask a math question in plain words\u{2026}";
 
 /// One line in the conversation. `from_user` decides bubble side + avatar.
 #[derive(Clone, PartialEq)]
@@ -16,6 +19,20 @@ fn bot_reply(input: &str) -> String {
         Ok(answer) => answer.to_sentence(),
         Err(ParseError::NotMath) => "that doesn't look like a math question".to_string(),
         Err(ParseError::Unknown) => "sorry, I could not understand that".to_string(),
+    }
+}
+
+/// Stick the transcript to the newest message. Runs after the DOM commit, so
+/// the freshly pushed bubble is already laid out when we read scrollHeight.
+fn scroll_chat_to_bottom() {
+    let Some(window) = web_sys::window() else {
+        return;
+    };
+    let Some(document) = window.document() else {
+        return;
+    };
+    if let Some(el) = document.get_element_by_id(CHAT_LIST_ID) {
+        el.set_scroll_top(el.scroll_height());
     }
 }
 
@@ -35,9 +52,17 @@ pub fn Chat() -> Element {
         messages.write().push(Message {
             id: 0,
             from_user: false,
-            text: "Hi! I'm LatCal 🧮 — ask me math in plain words, e.g. \"10$ discount 2%\"."
-                .to_string(),
+            text: BOT_SEED_TEXT.to_string(),
         });
+    });
+
+    // Derived from `input` directly — no extra state to keep in sync.
+    let can_send = use_memo(move || !input.read().trim().is_empty());
+
+    // Auto-scroll whenever the transcript changes (incl. the seed on mount).
+    use_effect(move || {
+        let _len = messages.read().len();
+        scroll_chat_to_bottom();
     });
 
     let mut send = move |_| {
@@ -68,15 +93,10 @@ pub fn Chat() -> Element {
     rsx! {
         section {
             class: if dark_mode() { "chat-app" } else { "chat-app light-mode" },
-            div { class: "chat-header",
-                span { class: "chat-bot-avatar", "🧮" }
-                div { class: "chat-bot-meta",
-                    strong { "LatCal" }
-                    span { class: "chat-bot-status", "modelless NL calculator" }
-                }
-            }
 
-            div { class: "chat-messages",
+            div {
+                id: CHAT_LIST_ID,
+                class: "chat-messages",
                 for msg in messages.read().iter() {
                     div {
                         key: "{msg.id}",
@@ -101,10 +121,15 @@ pub fn Chat() -> Element {
                     class: "chat-input",
                     value: "{input}",
                     oninput: move |e| input.set(e.value()),
-                    placeholder: "ask a math question in plain words…",
+                    placeholder: INPUT_PLACEHOLDER,
                     autocomplete: "off",
                 }
-                button { class: "chat-send", r#type: "submit", "Send" }
+                button {
+                    class: "chat-send",
+                    r#type: "submit",
+                    disabled: !can_send(),
+                    "Send"
+                }
             }
         }
     }
