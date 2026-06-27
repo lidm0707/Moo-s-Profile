@@ -44,7 +44,7 @@ pub fn ProfileLayout() -> Element {
         let supabase_url = env!("SUPABASE_URL");
         let supabase_anon_key = env!("SUPABASE_ANON_KEY");
 
-        Config::new(mode, supabase_url, supabase_anon_key, None)
+        Config::new(mode, supabase_url, supabase_anon_key, None, None, None)
     });
 
     use_context_provider(|| ContentContext::new(Some(config.clone())));
