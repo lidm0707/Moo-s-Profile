@@ -28,6 +28,12 @@ pub fn Nav() -> Element {
                 id: "content-link",
                 "Content"
             }
+            Link {
+                to: Route::Chat {},
+                class: "nav-link",
+                id: "chat-link",
+                "Chat"
+            }
         }
     }
 }

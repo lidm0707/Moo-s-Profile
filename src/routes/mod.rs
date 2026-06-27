@@ -17,6 +17,8 @@ pub enum Route {
     ContentPage {},
     #[route("/content/:slug")]
     ContentDetail { slug: String },
+    #[route("/chat")]
+    Chat {},
 }
 
 #[component]
@@ -32,7 +34,10 @@ pub fn ProfileLayout() -> Element {
     use_context_provider(|| dark_mode);
 
     let route: Route = use_route();
-    let is_content = matches!(route, Route::ContentPage {} | Route::ContentDetail { .. });
+    let is_standalone = matches!(
+        route,
+        Route::ContentPage {} | Route::ContentDetail { .. } | Route::Chat {}
+    );
 
     let config = use_hook(|| {
         let mode = env!("APP_MODE");
@@ -46,7 +51,7 @@ pub fn ProfileLayout() -> Element {
     use_context_provider(|| TagContext::new(Some(config.clone())));
     use_context_provider(|| ContentTagsContext::new(Some(config)));
 
-    if is_content {
+    if is_standalone {
         rsx! {
             Nav {}
             div {
@@ -68,10 +73,12 @@ pub fn ProfileLayout() -> Element {
     }
 }
 
+pub use chat::Chat;
 pub use content::{ContentDetail, ContentPage};
 pub use interests::Interests;
 pub use work_history::WorkHistory;
 
+mod chat;
 mod content;
 mod interests;
 mod work_history;

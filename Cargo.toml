@@ -14,6 +14,7 @@ categories = ["web-programming"]
 [dependencies]
 dioxus = { version = "0.7", features = ["router"] }
 content_sdk = {git = "https://github.com/lidm0707/content_profile",package = "content_sdk"}
+latent-calculator = { git = "https://github.com/lidm0707/latent-calculator" }
 chrono = "0.4.44"
 web-sys = { version = "0.3", features = ["Window", "Location"] }
 wasm-bindgen = "0.2"
