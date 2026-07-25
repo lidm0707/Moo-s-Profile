@@ -52,11 +52,23 @@ script tag is already in [`index.html`](../index.html):
 ```
 
 Replace the `ca-pub-XXXXXXXXXXXXXXXX` there with your own publisher ID (from the
-AdSense console → Account information).
+AdSense console → Account information). **`index.html` is the single source of
+truth for the publisher ID** — `build.rs` parses it at compile time and bakes
+the same value into the `Adsense` component's `data-ad-client`, so you do NOT
+need to mirror it anywhere else.
 
-Then **mirror the same ID in `.env`** so the `Adsense` component can fill in
-`data-ad-client` on each ad slot (the two must match). `.env` is gitignored and
-read by `build.rs` at compile time; a template lives in [`.env.example`](../.env.example):
+### Optional: `.env` override
+
+If you want to override the id from `index.html` (e.g. for a test build), set
+`ADSENSE_CLIENT_ID` in `.env`. The build resolves the publisher ID in this
+priority order:
+
+1. `ADSENSE_CLIENT_ID` env var (if set and not equal to the placeholder)
+2. parsed from `index.html` (`adsbygoogle.js?client=ca-pub-XXXX`)
+3. `PLACEHOLDER_CLIENT_ID` (disables ads at runtime)
+
+`.env` is gitignored and read by `build.rs` at compile time; a template lives
+in [`.env.example`](../.env.example):
 
 ```sh
 cp .env.example .env
@@ -64,7 +76,8 @@ cp .env.example .env
 
 ```dotenv
 # .env  (existing APP_MODE / SUPABASE_* vars live here too)
-ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXXXXXXXX
+# Optional — leave commented to use the id from index.html:
+# ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXXXXXXXX
 
 # Optional: override the sentinel that marks an unset publisher ID.
 # Defaults to ca-pub-0000000000000000. Only set this if you need a custom
@@ -73,17 +86,17 @@ ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXXXXXXXX
 ```
 
 > Site verification only needs the script in `index.html` — it does not depend
-> on `.env` or the `ads` feature. Ad *slots* additionally need `.env` set and the
-> `ads` feature enabled (see §3).
+> on `.env` or the `ads` feature. Ad *slots* additionally need the `ads` feature
+> enabled (see §3); the publisher ID comes from `index.html` automatically.
 
 
 `build.rs` injects both via `cargo:rustc-env=`, so the app reads them at runtime
 with `env!()` (`ADSENSE_CLIENT_ID`, `PLACEHOLDER_CLIENT_ID`).
 
-> If `ADSENSE_CLIENT_ID` is unset, the build still succeeds using the
-> `PLACEHOLDER_CLIENT_ID` value. The loader and the `Adsense` component both
-> detect when the publisher ID equals the placeholder and render nothing (with a
-> dev console warning), so the site keeps working.
+> If the publisher ID can't be resolved (no `index.html` script tag AND no
+> `ADSENSE_CLIENT_ID` env var), the build still succeeds using the
+> `PLACEHOLDER_CLIENT_ID` value. The `Adsense` component detects this at runtime
+> and renders nothing (with a dev console warning), so the site keeps working.
 
 ## 3. Enable ads
 

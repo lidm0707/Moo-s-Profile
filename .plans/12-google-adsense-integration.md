@@ -211,6 +211,44 @@ post-bundle copy step + Vercel route exception.
   confirm you see the plain-text line (not the app HTML). The AdSense console
   warning should clear within ~24–48h.
 
+## Round 6 — publisher ID resolution from index.html (2026-07-25)
+
+User rebuilt and the deployed site was sending `client=ca-pub-0000000000000000`
+(placeholder) to Google → 400 Bad Request. Root cause: `.env.example` showed
+`ADSENSE_CLIENT_ID=ca-pub-0000000000000000` as the template value, user copied
+it verbatim into `.env`, so it equalled `PLACEHOLDER_CLIENT_ID` and ads were
+disabled (or, in the older deployed bundle, the placeholder leaked into the
+`<ins data-ad-client>`).
+
+Architectural fix: make `index.html` the single source of truth for the
+publisher ID (it MUST be there for site verification anyway), eliminating the
+error-prone `.env` duplication.
+
+- [x] 27. `build.rs`: resolve `ADSENSE_CLIENT_ID` in priority order —
+      (1) env var if set + non-placeholder, (2) parse `index.html` for
+      `adsbygoogle.js?client=ca-pub-XXXX`, (3) placeholder. Added
+      `adsense_client_id_from_index_html()` helper + `rerun-if-changed=index.html`.
+      Fixed clippy `redundant_closure` (`or_else(fn)` not `or_else(|| fn())`).
+- [x] 28. `.env.example`: comment OUT `ADSENSE_CLIENT_ID` (was showing the
+      placeholder as a usable value, causing the footgun). Document priority.
+- [x] 29. Docs: `docs/adsense.md` §2 rewritten — index.html is source of truth,
+      `.env` is optional override only, priority order documented. README
+      quick-start updated (no .env mirror needed).
+- [x] 30. Rebuild `dist/` with `--features ads`; verified wasm contains BOTH
+      `ca-pub-0000000000000000` (placeholder, for runtime equality check) AND
+      `ca-pub-3526470154848781` (real, from index.html). Cleaned stale hashed
+      assets. `cargo clippy --features ads` clean.
+- [x] 31. Commit & push: `build.rs`, `.env.example`, `docs/adsense.md`,
+      `README.md`, `dist/`, `.plans/12-*.md`.
+
+### Outcome
+- User no longer needs to touch `.env` for ads — `index.html` is the config.
+- The runtime guard `ADSENSE_CLIENT_ID == PLACEHOLDER_CLIENT_ID` is now
+  `ca-pub-3526470154848781 != ca-pub-0000000000000000` → false → ads render.
+- The 400 from Google will stop once this deploy is live.
+- Still need: real ad slot id (currently `1234567890` placeholder) + site
+  approval + ads.txt propagation (24–48h).
+
 ## Notes
 
 - Choosing `ads` default-OFF: prevents real ad requests during `dx serve` dev and

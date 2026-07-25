@@ -79,8 +79,9 @@ troubleshooting, and deployment notes — see [`docs/adsense.md`](docs/adsense.m
    [AdSense console](https://www.google.com/adsense/), and approve your domain.
 2. Put the publisher id in the **static `index.html`** `<script>` tag (this is
    what Google's verification crawler reads — the app is client-rendered, so it
-   must be in the static HTML), and **mirror the same id in `.env`** as
-   `ADSENSE_CLIENT_ID` (used by the `Adsense` component).
+   must be in the static HTML). `build.rs` parses it from there automatically,
+   so **no `.env` entry is needed** for ads (set `ADSENSE_CLIENT_ID` in `.env`
+   only to override).
 3. Run/build **with the `ads` feature** to render ad slots:
    ```bash
    dx serve  --features ads          # preview
