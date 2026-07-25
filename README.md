@@ -93,7 +93,7 @@ troubleshooting, and deployment notes — see [`docs/adsense.md`](docs/adsense.m
 
    rsx! {
        Adsense {
-           ad_slot: "1234567890".to_string(),   // your AdSense slot id
+           ad_slot: "<YOUR_AD_SLOT_ID>".to_string(),   // from AdSense console → Ads → By ad unit
            // optional (all have sensible defaults):
            // ad_format: Some("auto".to_string()),
            // responsive: Some(true),

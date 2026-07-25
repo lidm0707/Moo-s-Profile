@@ -21,7 +21,7 @@ dx build --release --features ads # production
 ```rust
 // 3. drop a slot anywhere
 use crate::components::Adsense;
-rsx! { Adsense { ad_slot: "1234567890".to_string() } }   // your AdSense slot id
+rsx! { Adsense { ad_slot: "<YOUR_AD_SLOT_ID>".to_string() } }   // from AdSense console
 ```
 
 Done. Without `--features ads`, every `Adsense` renders nothing and no AdSense
@@ -36,7 +36,9 @@ script is loaded. The sections below cover full setup, options, and troubleshoot
 3. Copy your **publisher ID**, formatted `ca-pub-XXXXXXXXXXXXXXXX` (found in
    AdSense → Account → Account information, or in the snippet `data-ad-client`).
 4. Create one or more **ad units** (AdSense → Ads → By ad unit → Display ads) and
-   copy each **Slot ID** (the numeric `data-ad-slot`, e.g. `1234567890`).
+   copy each **Slot ID** (the numeric `data-ad-slot`). The component will refuse
+   to render if the slot equals the placeholder sentinel
+   (`crate::components::adsense::PLACEHOLDER_AD_SLOT`) or is empty.
 
 ## 2. Configure the publisher ID
 
@@ -122,7 +124,7 @@ use crate::components::Adsense;
 
 rsx! {
     Adsense {
-        ad_slot: "1234567890".to_string(),         // required: AdSense slot id
+        ad_slot: "<YOUR_AD_SLOT_ID>".to_string(),  // required: AdSense slot id
         // Optional (all have sensible defaults):
         ad_format: Some("auto".to_string()),       // "auto" | "horizontal" | "rectangle" | "vertical"
         responsive: Some(true),                    // data-full-width-responsive

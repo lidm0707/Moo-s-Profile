@@ -15,6 +15,26 @@ const DEFAULT_RESPONSIVE: bool = true;
 #[cfg(feature = "ads")]
 const DEFAULT_LAZY: bool = true;
 
+#[cfg(feature = "ads")]
+const DEFAULT_INS_STYLE: &str = "display:block";
+
+#[cfg(feature = "ads")]
+const ADSBYGOOGLE_CLASS: &str = "adsbygoogle";
+
+#[cfg(feature = "ads")]
+const ADSENSE_WRAP_CLASS: &str = "adsense-wrap";
+
+#[cfg(feature = "ads")]
+const ADSENSE_WRAP_DARK_SUFFIX: &str = " adsense-wrap-dark";
+
+#[cfg(feature = "ads")]
+const ADSENSE_WRAP_LIGHT_SUFFIX: &str = " adsense-wrap-light";
+
+/// Sentinel that marks an unset AdSense slot id. Public so callers can compare
+/// against it without hardcoding the value. Always available (no feature gate)
+/// so call sites don't need to gate their imports.
+pub const PLACEHOLDER_AD_SLOT: &str = "0000000000";
+
 /// How far outside the viewport an ad may be before it loads (IntersectionObserver
 /// rootMargin). Prefetching slightly improves perceived load without early requests.
 #[cfg(feature = "ads")]
@@ -73,6 +93,12 @@ fn render_adsense(args: AdsenseArgs) -> Element {
         );
         return rsx! {};
     }
+    if args.ad_slot == PLACEHOLDER_AD_SLOT || args.ad_slot.is_empty() {
+        web_sys::console::warn_1(
+            &"[adsense] ad_slot is unset; pass a real AdSense slot id.".into(),
+        );
+        return rsx! {};
+    }
 
     let AdsenseArgs {
         ad_slot,
@@ -88,15 +114,15 @@ fn render_adsense(args: AdsenseArgs) -> Element {
     let lazy = lazy.unwrap_or(DEFAULT_LAZY);
     let ad_format = ad_format.unwrap_or_else(|| DEFAULT_AD_FORMAT.to_string());
     let wrap_class = match dark_mode {
-        Some(true) => "adsense-wrap adsense-wrap-dark",
-        Some(false) => "adsense-wrap adsense-wrap-light",
-        None => "adsense-wrap",
+        Some(true) => ADSENSE_WRAP_DARK_SUFFIX,
+        Some(false) => ADSENSE_WRAP_LIGHT_SUFFIX,
+        None => "",
     };
-    let ins_class = format!("adsbygoogle {}", class.unwrap_or_default());
-    let ins_style = style.unwrap_or_else(|| "display:block".to_string());
+    let ins_class = format!("{ADSBYGOOGLE_CLASS} {}", class.unwrap_or_default());
+    let ins_style = style.unwrap_or_else(|| DEFAULT_INS_STYLE.to_string());
 
     rsx! {
-        div { class: wrap_class,
+        div { class: "{ADSENSE_WRAP_CLASS}{wrap_class}",
             ins {
                 class: ins_class,
                 style: ins_style,

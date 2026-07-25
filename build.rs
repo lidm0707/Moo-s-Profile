@@ -49,18 +49,63 @@ fn main() {
 /// `index.html` by finding `adsbygoogle.js?client=ca-pub-` and reading the id
 /// that follows. Returns None if the file is missing or the marker isn't found.
 fn adsense_client_id_from_index_html() -> Option<String> {
-    const MARKER: &str = "adsbygoogle.js?client=";
     let html = std::fs::read_to_string("index.html").ok()?;
+    parse_adsense_client_id(&html).map(str::to_string)
+}
+
+/// Pure parser: extract the AdSense publisher id from an HTML string by finding
+/// `adsbygoogle.js?client=ca-pub-` and reading the id that follows. Id is
+/// terminated by `"`, `&`, whitespace, or end-of-string. Returns `None` when the
+/// marker is absent or the captured id doesn't start with `ca-pub-`.
+fn parse_adsense_client_id(html: &str) -> Option<&str> {
+    const MARKER: &str = "adsbygoogle.js?client=";
     let start = html.find(MARKER)?;
     let tail = &html[start + MARKER.len()..];
-    // publisher id = `ca-pub-` followed by digits, terminated by `"` or `&`/space
     let end = tail
         .find(|c: char| c == '"' || c == '&' || c.is_whitespace())
         .unwrap_or(tail.len());
     let id = &tail[..end];
-    if id.starts_with("ca-pub-") {
-        Some(id.to_string())
-    } else {
-        None
+    id.starts_with("ca-pub-").then_some(id)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_adsense_client_id;
+
+    #[test]
+    fn parses_valid_client_id() {
+        let html = "<script src=\"https://pagead2.googlesyndication.com/\
+            pagead/js/adsbygoogle.js?client=ca-pub-3526470154848781\" \
+            crossorigin=\"anonymous\"></script>";
+        assert_eq!(
+            parse_adsense_client_id(html),
+            Some("ca-pub-3526470154848781")
+        );
+    }
+
+    #[test]
+    fn returns_none_when_marker_absent() {
+        let html = "<html><head><title>no adsense here</title></head></html>";
+        assert_eq!(parse_adsense_client_id(html), None);
+    }
+
+    #[test]
+    fn returns_none_when_id_lacks_ca_pub_prefix() {
+        let html = "<script src=\"https://pagead2.googlesyndication.com/\
+            pagead/js/adsbygoogle.js?client=pub-12345\"></script>";
+        assert_eq!(parse_adsense_client_id(html), None);
+    }
+
+    #[test]
+    fn terminates_at_quote_amper_or_whitespace() {
+        // `&` case (query-string continuation)
+        let a = "adsbygoogle.js?client=ca-pub-1111111111111111&crossorigin=anonymous";
+        assert_eq!(parse_adsense_client_id(a), Some("ca-pub-1111111111111111"));
+        // whitespace case
+        let b = "adsbygoogle.js?client=ca-pub-2222222222222222 crossorigin";
+        assert_eq!(parse_adsense_client_id(b), Some("ca-pub-2222222222222222"));
+        // end-of-string case (no terminator)
+        let c = "adsbygoogle.js?client=ca-pub-3333333333333333";
+        assert_eq!(parse_adsense_client_id(c), Some("ca-pub-3333333333333333"));
     }
 }
