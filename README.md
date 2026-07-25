@@ -60,12 +60,12 @@ This project reads configuration from a `.env` file at build time (via `build.rs
 Copy the documented template to get started:
 
 ```bash
-cp .env.example .env
+cp .env.sample .env
 ```
 
 Required: `APP_MODE`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`. Optional: AdSense vars
 (see below). `.env` is gitignored — never commit real secrets. Full reference in
-[`.env.example`](.env.example).
+[`.env.sample`](.env.sample).
 
 ## How to Use Google AdSense
 
@@ -139,7 +139,7 @@ my_profile/
 │  ├─ hooks/         # Custom hooks
 │  ├─ routes/        # Route definitions and pages
 │  └─ main.rs        # App entry, global head (styles, scripts)
-├─ .env.example      # Documented template for required env vars
+├─ .env.sample      # Documented template for required env vars
 ├─ .github/
 │  └─ workflows/
 │     └─ ci.yml      # GitHub Actions workflow for CI/CD

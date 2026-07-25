@@ -33,6 +33,8 @@ fn main() {
     //   3. PLACEHOLDER_CLIENT_ID (disables ads at runtime via the equality check)
     let placeholder_client_id = std::env::var("PLACEHOLDER_CLIENT_ID")
         .unwrap_or_else(|_| "ca-pub-0000000000000000".to_string());
+    let placeholder_ad_slot =
+        std::env::var("PLACEHOLDER_AD_SLOT").unwrap_or_else(|_| "0000000000".to_string());
     let adsense_client_id = std::env::var("ADSENSE_CLIENT_ID")
         .ok()
         .filter(|v| !v.is_empty() && v != &placeholder_client_id)
@@ -41,6 +43,10 @@ fn main() {
     println!(
         "cargo:rustc-env=PLACEHOLDER_CLIENT_ID={}",
         placeholder_client_id
+    );
+    println!(
+        "cargo:rustc-env=PLACEHOLDER_AD_SLOT={}",
+        placeholder_ad_slot
     );
     println!("cargo:rustc-env=ADSENSE_CLIENT_ID={}", adsense_client_id);
 }

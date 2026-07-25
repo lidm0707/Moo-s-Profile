@@ -32,8 +32,9 @@ const ADSENSE_WRAP_LIGHT_SUFFIX: &str = " adsense-wrap-light";
 
 /// Sentinel that marks an unset AdSense slot id. Public so callers can compare
 /// against it without hardcoding the value. Always available (no feature gate)
-/// so call sites don't need to gate their imports.
-pub const PLACEHOLDER_AD_SLOT: &str = "0000000000";
+/// so call sites don't need to gate their imports. Override the default via the
+/// PLACEHOLDER_AD_SLOT env var (see build.rs).
+pub const PLACEHOLDER_AD_SLOT: &str = env!("PLACEHOLDER_AD_SLOT");
 
 /// How far outside the viewport an ad may be before it loads (IntersectionObserver
 /// rootMargin). Prefetching slightly improves perceived load without early requests.

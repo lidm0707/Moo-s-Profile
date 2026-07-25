@@ -10,7 +10,7 @@ Everything lives in [`src/components/adsense.rs`](../src/components/adsense.rs).
 
 ```bash
 # 1. configure your publisher id (placeholder disables ads when unset)
-cp .env.example .env   # then edit: ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXXXXXXXX
+cp .env.sample .env    # then edit: ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXXXXXXXX
 
 # 2. run/build WITH the ads feature
 
@@ -70,11 +70,15 @@ priority order:
 3. `PLACEHOLDER_CLIENT_ID` (disables ads at runtime)
 
 `.env` is gitignored and read by `build.rs` at compile time; a template lives
-in [`.env.example`](../.env.example):
+in [`.env.sample`](../.env.sample):
 
 ```sh
-cp .env.example .env
+cp .env.sample .env
 ```
+
+The template ships `ADSENSE_CLIENT_ID=` **empty by default** — leave it empty
+to use the id parsed from `index.html`, or fill it in to override (e.g. for a
+test build).
 
 ```dotenv
 # .env  (existing APP_MODE / SUPABASE_* vars live here too)
@@ -85,6 +89,11 @@ cp .env.example .env
 # Defaults to ca-pub-0000000000000000. Only set this if you need a custom
 # placeholder (e.g. a test publisher id).
 # PLACEHOLDER_CLIENT_ID=ca-pub-0000000000000000
+
+# Optional: override the sentinel that marks an unset ad slot id.
+# Defaults to 0000000000. The Adsense component refuses to render when
+# ad_slot equals this value or is empty. Only set this for custom tooling.
+# PLACEHOLDER_AD_SLOT=0000000000
 ```
 
 > Site verification only needs the script in `index.html` — it does not depend
@@ -92,8 +101,9 @@ cp .env.example .env
 > enabled (see §3); the publisher ID comes from `index.html` automatically.
 
 
-`build.rs` injects both via `cargo:rustc-env=`, so the app reads them at runtime
-with `env!()` (`ADSENSE_CLIENT_ID`, `PLACEHOLDER_CLIENT_ID`).
+`build.rs` injects all three via `cargo:rustc-env=`, so the app reads them at
+runtime with `env!()` (`ADSENSE_CLIENT_ID`, `PLACEHOLDER_CLIENT_ID`,
+`PLACEHOLDER_AD_SLOT`).
 
 > If the publisher ID can't be resolved (no `index.html` script tag AND no
 > `ADSENSE_CLIENT_ID` env var), the build still succeeds using the
