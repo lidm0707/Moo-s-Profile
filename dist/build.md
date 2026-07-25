@@ -18,6 +18,8 @@ dx bundle --release --out-dir ./dist
 #     sitemap.xml must be served at exactly /sitemap.xml for SEO;
 #     the Dioxus.toml `static` array hashes filenames, so we copy manually)
 cp ads.txt dist/public/ads.txt
+# refresh sitemap.xml with the latest published content from Supabase
+node scripts/update-sitemap.mjs
 cp sitemap.xml dist/public/sitemap.xml
 
 # 4. commit & push to deploy
@@ -51,13 +53,17 @@ them explicitly.
 
 - **Source of truth:** [`sitemap.xml`](../sitemap.xml) in the project root.
 - **Routes included:** `/`, `/interests`, `/work-history`, `/content`, `/chat`
-  (the dynamic `/content/:slug` route is omitted — slugs come from Supabase at
-  runtime and can't be enumerated statically).
+  (static) plus one `/content/<slug>` per published row in the `content` table
+  (dynamic — fetched from Supabase by the generator below).
 - **Canonical domain:** `https://www.lilidm.com/` (apex redirects to www).
 - **Deployed path:** `dist/public/sitemap.xml` → served at `/sitemap.xml`.
 - **Vercel routing:** `vercel.json` has an explicit `/sitemap.xml` route BEFORE
   the SPA catch-all so the file is served instead of `index.html`.
 - **Rebuild note:** step 3 above copies it after `dx bundle` — `rm -rf
   dist/public` wipes it, so always re-copy.
-- **Updating `lastmod`:** edit `sitemap.xml` at the root and bump the
-  `<lastmod>` dates when content changes significantly, then rebuild.
+- **Generator:** [`scripts/update-sitemap.mjs`](../scripts/update-sitemap.mjs)
+  rebuilds `sitemap.xml` at the root from the published content in Supabase
+  (reads `SUPABASE_URL` / `SUPABASE_ANON_KEY` from `.env`). Run it before the
+  `cp` above so the deployed sitemap reflects current content. Tag-filtered
+  URLs (`/content?tag_id=…`) are intentionally omitted — those are SPA filter
+  state, not distinct resources; individual posts are already listed by slug.
