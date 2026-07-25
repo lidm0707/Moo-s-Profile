@@ -176,6 +176,41 @@ created in the AdSense console (Privacy & messaging → GDPR), not in code.
   in `index.html` shows the banner and AdSense respects the user's choices
   automatically — no code change needed.
 
+## Round 5 — ads.txt (AdSense seller verification) (2026-07-25)
+
+User hit "Ads.txt status not found" in AdSense. Root cause: no `ads.txt` file
+served at the site root, so AdSense can't verify the publisher is an authorized
+seller. Two sub-issues: (a) the file didn't exist, (b) the Vercel SPA catch-all
+route (`/(.*)` → `/index.html`) would rewrite `/ads.txt` to the SPA shell even
+if the file existed.
+
+Discovery: the `Dioxus.toml` `[web.resource] static = [...]` array HASHES
+filenames (`bg_profile.jpg` → `bg_profile-dxh8ce2f1df1c948458.jpg` under
+`assets/`), so it can't be used for `ads.txt` (AdSense needs exactly `/ads.txt`,
+root, no hash, no prefix). Solution: source-of-truth file at repo root +
+post-bundle copy step + Vercel route exception.
+
+- [x] 21. Create `ads.txt` at repo root with
+      `google.com, pub-3526470154848781, DIRECT, f08c47fec0942fa0`
+      (publisher id number part only; standard Google TAG-ID).
+- [x] 22. Update `vercel.json` `routes` to add
+      `{ "src": "/ads.txt", "dest": "/ads.txt" }` BEFORE the SPA catch-all so
+      the file is served instead of `index.html`.
+- [x] 23. Update `dist/build.md`: document the post-bundle
+      `cp ads.txt dist/public/ads.txt` step (step 3) + a section on ads.txt
+      (why it isn't in `Dioxus.toml` static, format, deploy path, verify steps).
+- [x] 24. Document in `docs/adsense.md` as new §4d (seller verification): file
+      format, why-not-Dioxus-static, Vercel routing, live-verify steps,
+      reuse-on-another-site checklist. Brief mention in README quick-start.
+- [x] 25. Copy `ads.txt` to `dist/public/ads.txt` so it deploys on next push.
+- [x] 26. Commit & push: `ads.txt`, `dist/public/ads.txt`, `dist/build.md`,
+      `vercel.json`, `docs/adsense.md`, `README.md`, `.plans/12-*.md`.
+
+### TODO (user action)
+- After Vercel deploys, visit `https://<your-domain>/ads.txt` in a browser and
+  confirm you see the plain-text line (not the app HTML). The AdSense console
+  warning should clear within ~24–48h.
+
 ## Notes
 
 - Choosing `ads` default-OFF: prevents real ad requests during `dx serve` dev and

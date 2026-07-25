@@ -224,6 +224,51 @@ Only the two `<script>` tags in `index.html` change:
    same id in `.env` as `ADSENSE_CLIENT_ID`.
 3. Publish a new GDPR message in the AdSense console for the new domain.
 
+## 4d. ads.txt (seller verification)
+
+AdSense requires `https://<your-domain>/ads.txt` to verify you're an authorized
+seller of your ad inventory. Without it, AdSense shows **"ads.txt status not
+found"** in the console and may stop serving ads (or serve unpaid PSA).
+
+This project ships an `ads.txt` at the repo root ([`ads.txt`](../ads.txt)):
+
+```txt
+google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+```
+
+Fields:
+
+- `google.com` — the ad system domain.
+- `pub-XXXXXXXXXXXXXXXX` — your publisher id, **number part only** (no `ca-`
+  prefix). Same id as the CMP loader URL.
+- `DIRECT` — you sell inventory directly to Google (vs. `RESELLER`).
+- `f08c47fec0942fa0` — Google's standard TAG-ID, same for all AdSense publishers.
+
+### Why it isn't in `Dioxus.toml` `static`
+
+The `Dioxus.toml` `[web.resource] static = [...]` array **hashes filenames**
+(`bg_profile.jpg` → `bg_profile-dxh8ce2f1df1c948458.jpg` under `assets/`).
+AdSense requires the file at exactly `/ads.txt` (root, no hash, no prefix), so
+the static-array mechanism can't be used. Instead:
+
+- **Source of truth:** `ads.txt` in the repo root.
+- **Deployed path:** `dist/public/ads.txt` (copied after `dx bundle` — see
+  [`dist/build.md`](../dist/build.md) step 3).
+- **Vercel routing:** `vercel.json` lists `/ads.txt` BEFORE the SPA catch-all
+  (`/(.*)` → `/index.html`) so the file is served instead of the SPA shell.
+
+### Verify it's live
+
+After deploying, check `https://<your-domain>/ads.txt` in a browser — you
+should see the plain-text line above (not the app's HTML). Then in AdSense →
+**Ads → Summary**, the "ads.txt" warning should clear within ~24–48h.
+
+### Reusing on another site
+
+Edit `ads.txt` and replace `pub-XXXXXXXXXXXXXXXX` with the new site's publisher
+id (number part only). Re-run the build (including the `cp ads.txt
+ dist/public/ads.txt` step) and deploy.
+
 ## 5. Local development behavior
 
 - The AdSense library loads from the static `index.html` script tag in **every**

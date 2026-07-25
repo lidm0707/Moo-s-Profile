@@ -118,6 +118,10 @@ Notes:
   (Consent / Manage options) is loaded from the static `index.html`, before
   the AdSense library. Create the GDPR message once in the AdSense console
   (Privacy & messaging) — see `docs/adsense.md` §4c.
+- An **`ads.txt`** (AdSense seller verification) lives at the repo root and is
+  copied to `dist/public/ads.txt` by the build flow (see `dist/build.md`).
+  `vercel.json` has a route exception so `/ads.txt` is served instead of the
+  SPA shell. See `docs/adsense.md` §4d.
 
 See [`docs/adsense.md`](docs/adsense.md) for the full reference (verification,
 consent banner/CMP, troubleshooting, lazy-load, theme support).

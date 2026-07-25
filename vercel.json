@@ -1,6 +1,7 @@
 {
   "outputDirectory": "dist/public",
   "routes": [
+    { "src": "/ads.txt", "dest": "/ads.txt" },
     { "src": "/assets/(.*)", "dest": "/assets/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
