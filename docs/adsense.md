@@ -157,6 +157,73 @@ Then in the AdSense console, request verification of `https://<your-domain>`.
 If it still fails, confirm the script tag with your `client=ca-pub-...` is
 visible in the deployed page's HTML (View Source, *not* the Elements panel).
 
+## 4c. Consent banner (Google CMP / Funding Choices)
+
+GDPR/CCPA consent is handled by **Google's Consent Management Platform
+(Funding Choices)**. It shows a banner with 2 buttons — **Consent** and
+**Manage options** — and gates ad personalization accordingly. The message
+itself is created in the **AdSense console**, not in code.
+
+### How it works
+
+The CMP loader is in the static [`index.html`](../index.html) and runs
+**before** the AdSense library so consent is established first:
+
+```html
+<!-- 1) Funding Choices CMP loader (place BEFORE adsbygoogle) -->
+<script async
+  src="https://fundingchoicesmessages.google.com/i/pub-XXXXXXXXXXXXXXXX?ers=1"></script>
+<script>(function() {
+    function signalGooglefcPresent() {
+        if (!window.frames['googlefcPresent']) {
+            if (document.body) {
+                const iframe = document.createElement('iframe');
+                iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;';
+                iframe.style.display = 'none';
+                iframe.name = 'googlefcPresent';
+                document.body.appendChild(iframe);
+            } else {
+                setTimeout(signalGooglefcPresent, 0);
+            }
+        }
+    }
+    signalGooglefcPresent();
+})();</script>
+
+<!-- 2) AdSense library -->
+<script async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+  crossorigin="anonymous"></script>
+```
+
+The publisher id for the CMP URL is the **number part only** of your AdSense
+client id (strip the `ca-` prefix). For example, if your AdSense client id is
+`ca-pub-3526470154848781`, the CMP URL uses `pub-3526470154848781`.
+
+### Create the consent message (one-time, in AdSense console)
+
+1. Sign in to [AdSense](https://www.google.com/adsense/).
+2. Go to **Privacy & messaging → GDPR** and click **Create message**.
+3. Select your site and choose a message type that gives **2 choices**:
+   * a primary **Consent** button, and
+   * a secondary **Manage options** button.
+4. Edit the text and button labels, then **Publish**.
+5. Repeat under **Privacy & messaging → CCPA** if you serve California users.
+
+Once published, the CMP loader in `index.html` will display the banner and
+AdSense will automatically respect the user's choices (personalized vs.
+non-personalized ads). No code change is needed for the banner content.
+
+### Reusing on another site
+
+Only the two `<script>` tags in `index.html` change:
+
+1. Replace `pub-XXXXXXXXXXXXXXXX` in the CMP loader URL with the new site's
+   publisher id (number part, no `ca-`).
+2. Replace `ca-pub-XXXXXXXXXXXXXXXX` in the AdSense library URL and mirror the
+   same id in `.env` as `ADSENSE_CLIENT_ID`.
+3. Publish a new GDPR message in the AdSense console for the new domain.
+
 ## 5. Local development behavior
 
 - The AdSense library loads from the static `index.html` script tag in **every**

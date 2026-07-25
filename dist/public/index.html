@@ -4,6 +4,25 @@
         <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="UTF-8">
+        <!-- Google CMP (Funding Choices) — must load BEFORE adsbygoogle so consent is established first. Replace pub-XXXX with your own publisher id for other sites. -->
+        <script async src="https://fundingchoicesmessages.google.com/i/pub-3526470154848781?ers=1"></script>
+        <script>(function() {
+            function signalGooglefcPresent() {
+                if (!window.frames['googlefcPresent']) {
+                    if (document.body) {
+                        const iframe = document.createElement('iframe');
+                        iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;';
+                        iframe.style.display = 'none';
+                        iframe.name = 'googlefcPresent';
+                        document.body.appendChild(iframe);
+                    } else {
+                        setTimeout(signalGooglefcPresent, 0);
+                    }
+                }
+            }
+            signalGooglefcPresent();
+        })();</script>
+        <!-- Google AdSense library — replace ca-pub-XXXX with your own publisher id for other sites. -->
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3526470154848781"
                 crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/./assets/main-dxh80b879274fe147f6.css" type="text/css"><link rel="preload" as="script" href="/./assets/my_profile-dxh42161622f00efcb.js" crossorigin></head>

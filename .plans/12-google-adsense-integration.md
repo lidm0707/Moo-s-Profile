@@ -1,7 +1,7 @@
 # Plan 12: Google AdSense Integration for Dioxus 0.7+
 
 **Created:** 2026-07-24
-**Status:** Done
+**Status:** Done (round 4 added)
 
 ## Goal
 
@@ -145,6 +145,36 @@ Notes:
   heuristic `on_impression` on mount would be misleading. Documented as why-not.
 - NOT implementing "automatic late-script retry": AdSense's push queue already
   handles late script loading, so it's redundant.
+
+## Round 4 — Google CMP (Funding Choices) consent banner (2026-07-25)
+
+User asked to use Google's CMP to create a 2-choice message (Consent /
+Manage options) for this and future sites. The CMP loader is added to the
+static `index.html` (crawler-visible, loads early) before the AdSense library
+so consent is established before ads init. The 2-choice message itself is
+created in the AdSense console (Privacy & messaging → GDPR), not in code.
+
+- [x] 17. Add the Google CMP (Funding Choices) loader to the static
+      `index.html`, BEFORE the AdSense library script. CMP URL uses the
+      number part of the publisher id (`pub-3526470154848781`, no `ca-`).
+      Comments mark both scripts as the config points for future sites.
+- [x] 18. Document CMP in `docs/adsense.md` as new §4c: how it works, the
+      console steps to create the GDPR message (2 choices), and a
+      "reusing on another site" checklist. Brief mention added to README
+      quick-start.
+- [x] 19. Rebuild dist: `rm -rf dist/public && dx bundle --release --out-dir ./dist`.
+      Verified `dist/public/index.html` contains BOTH scripts, CMP first, then
+      AdSense. (Pre-existing `wasm-opt` SIGABRT toolchain quirk — bundle still
+      completes with unoptimized wasm, not introduced here.)
+- [x] 20. Commit & push: `index.html`, `dist/`, `docs/adsense.md`, `README.md`,
+      `.plans/12-*.md`.
+
+### TODO (user action)
+- In the AdSense console: **Privacy & messaging → GDPR → Create message**,
+  select the site, configure 2 choices (Consent + Manage options), Publish.
+  Repeat for **CCPA** if serving California users. Once published, the loader
+  in `index.html` shows the banner and AdSense respects the user's choices
+  automatically — no code change needed.
 
 ## Notes
 

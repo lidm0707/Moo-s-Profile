@@ -114,9 +114,13 @@ Notes:
   and a non-placeholder `ADSENSE_CLIENT_ID`; without them nothing renders.
 - Google only serves real ads on approved domains; on `localhost` you may see
   blank spaces or PSAs — that's expected.
+- A **consent banner** (Google CMP / Funding Choices) with 2 choices
+  (Consent / Manage options) is loaded from the static `index.html`, before
+  the AdSense library. Create the GDPR message once in the AdSense console
+  (Privacy & messaging) — see `docs/adsense.md` §4c.
 
 See [`docs/adsense.md`](docs/adsense.md) for the full reference (verification,
-troubleshooting, lazy-load, theme support).
+consent banner/CMP, troubleshooting, lazy-load, theme support).
 
 ## Project Structure
 
