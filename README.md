@@ -77,14 +77,14 @@ troubleshooting, and deployment notes — see [`docs/adsense.md`](docs/adsense.m
 
 1. Get your publisher id (`ca-pub-XXXXXXXXXXXXXXXX`) and an ad slot id from the
    [AdSense console](https://www.google.com/adsense/), and approve your domain.
-2. Set it in `.env` (built-in placeholder disables ads when unset):
-   ```dotenv
-   ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXXXXXXXX
-   ```
-3. Run/build **with the `ads` feature**:
+2. Put the publisher id in the **static `index.html`** `<script>` tag (this is
+   what Google's verification crawler reads — the app is client-rendered, so it
+   must be in the static HTML), and **mirror the same id in `.env`** as
+   `ADSENSE_CLIENT_ID` (used by the `Adsense` component).
+3. Run/build **with the `ads` feature** to render ad slots:
    ```bash
-   dx serve  --features ads   # preview
-   dx build --release --features ads   # production
+   dx serve  --features ads          # preview
+   dx bundle --release --features ads --out-dir ./dist   # production → dist/
    ```
 4. Drop an ad slot anywhere with the reusable `Adsense` component:
    ```rust
@@ -96,6 +96,8 @@ troubleshooting, and deployment notes — see [`docs/adsense.md`](docs/adsense.m
            // optional (all have sensible defaults):
            // ad_format: Some("auto".to_string()),
            // responsive: Some(true),
+           // lazy: Some(true),
+           // dark_mode: Some(dark_mode()),
            // style: Some("display:block".to_string()),
            // class: Some("my-ad-wrap".to_string()),
        }
@@ -104,12 +106,17 @@ troubleshooting, and deployment notes — see [`docs/adsense.md`](docs/adsense.m
 
 Notes:
 
-- Without `--features ads`, every `Adsense` renders nothing and the global
-  AdSense script is never injected.
-- The global script is injected exactly once (Dioxus dedupes it in `<head>`);
-  navigation between routes initializes only newly created ad slots.
+- Vercel deploys the committed `dist/` (no build command in `vercel.json`),
+  so rebuild with `dx bundle --release [--features ads] --out-dir ./dist` and
+  commit `dist/` to deploy changes.
+- The AdSense library loads from the static `index.html` script tag in every
+  build (required for site verification). Ad **slots** require the `ads` feature
+  and a non-placeholder `ADSENSE_CLIENT_ID`; without them nothing renders.
 - Google only serves real ads on approved domains; on `localhost` you may see
   blank spaces or PSAs — that's expected.
+
+See [`docs/adsense.md`](docs/adsense.md) for the full reference (verification,
+troubleshooting, lazy-load, theme support).
 
 ## Project Structure
 

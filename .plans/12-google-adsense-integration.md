@@ -107,6 +107,38 @@ The optional features were scoped out in round 1; user wants them implemented.
       Demo passes `dark_mode: Some(dark_mode())`. `docs/adsense.md` updated
       (props, behavior, enhancement status). `cargo clippy` clean both modes.
 
+## Round 3 — Site verification fix (2026-07-25)
+
+User hit "Couldn't verify your site" in AdSense. Root cause: the app is CSR, so
+the runtime `document::Script` injection was invisible to Google's verification
+crawler (which reads raw HTML, not JS-rendered DOM). Also `dist/` wasn't being
+committed (Vercel deploys committed `dist/`).
+
+- [x] 13. Add the AdSense `<script>` to a **custom root `index.html`** so it is
+      in the static HTML the crawler reads. Verified Dioxus 0.7 uses a root
+      `index.html` as a template and injects CSS/module script into it (built
+      and confirmed the script is preserved in output). Used the real id
+      `ca-pub-3526470154848781`.
+- [x] 14. Remove the now-redundant runtime `document::Script` from `main.rs`
+      and the `adsense_script_src()` helper + `ADSENSE_LIB_URL` const (would
+      double-load the library + cause dead-code warnings). The library now loads
+      only via the static `index.html` script tag.
+- [x] 15. Discover deploy build: `dist/build.md` documents
+      `dx bundle --release --out-dir ./dist` (NOT `dx build`, which outputs to
+      `target/dx/.../web/public`). Ran it; output `dist/public/index.html` now
+      contains the AdSense script. (Pre-existing `wasm-opt` SIGABRT + stale
+      hashed-asset accumulation in `target/dx` are toolchain quirks, not
+      introduced here; the old committed dist used the same pattern.)
+- [x] 16. Update docs (README quick-start, docs/adsense.md §2/§4b/§5) for the
+      static-script architecture + verification steps + `dx bundle` deploy.
+      Validate `cargo clippy` clean.
+
+### TODO (user action)
+- Set `ADSENSE_CLIENT_ID=ca-pub-3526470154848781` in `.env` (mirrors index.html)
+  so ad slots render `data-ad-client`. (Verification does NOT need this — only
+  the static index.html script does.)
+- Re-run verification in AdSense console after this push deploys.
+
 Notes:
 - NOT implementing analytics hooks: AdSense renders into a cross-origin iframe,
   so reliable click/impression detection isn't possible from the host page. A

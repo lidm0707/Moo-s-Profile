@@ -21,10 +21,6 @@ const DEFAULT_LAZY: bool = true;
 const LAZY_ROOT_MARGIN: &str = "200px";
 
 #[cfg(feature = "ads")]
-const ADSENSE_LIB_URL: &str =
-    "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=";
-
-#[cfg(feature = "ads")]
 #[wasm_bindgen::prelude::wasm_bindgen(inline_js = "
     export function push_adsense_now() {
         try {
@@ -67,21 +63,6 @@ struct AdsenseArgs {
     dark_mode: Option<bool>,
     style: Option<String>,
     class: Option<String>,
-}
-
-/// URL for the global AdSense library script, or `None` when ads are disabled or
-/// the publisher ID is still the placeholder (so `main.rs` skips injection).
-#[cfg(feature = "ads")]
-pub(crate) fn adsense_script_src() -> Option<String> {
-    if ADSENSE_CLIENT_ID == PLACEHOLDER_CLIENT_ID {
-        return None;
-    }
-    Some(format!("{ADSENSE_LIB_URL}{ADSENSE_CLIENT_ID}"))
-}
-
-#[cfg(not(feature = "ads"))]
-pub(crate) fn adsense_script_src() -> Option<String> {
-    None
 }
 
 #[cfg(feature = "ads")]

@@ -40,9 +40,23 @@ script is loaded. The sections below cover full setup, options, and troubleshoot
 
 ## 2. Configure the publisher ID
 
-Add the publisher ID to your `.env` (this file is gitignored and read by
-`build.rs` at compile time). A documented template lives in
-[`.env.example`](../.env.example) — copy it to start:
+The AdSense library script must live in the **static `index.html`** (project
+root) so Google's verification crawler can find it — this is a client-rendered
+app, so anything injected at runtime by JS is invisible to the crawler. The
+script tag is already in [`index.html`](../index.html):
+
+```html
+<script async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+  crossorigin="anonymous"></script>
+```
+
+Replace the `ca-pub-XXXXXXXXXXXXXXXX` there with your own publisher ID (from the
+AdSense console → Account information).
+
+Then **mirror the same ID in `.env`** so the `Adsense` component can fill in
+`data-ad-client` on each ad slot (the two must match). `.env` is gitignored and
+read by `build.rs` at compile time; a template lives in [`.env.example`](../.env.example):
 
 ```sh
 cp .env.example .env
@@ -57,6 +71,11 @@ ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXXXXXXXX
 # placeholder (e.g. a test publisher id).
 # PLACEHOLDER_CLIENT_ID=ca-pub-0000000000000000
 ```
+
+> Site verification only needs the script in `index.html` — it does not depend
+> on `.env` or the `ads` feature. Ad *slots* additionally need `.env` set and the
+> `ads` feature enabled (see §3).
+
 
 `build.rs` injects both via `cargo:rustc-env=`, so the app reads them at runtime
 with `env!()` (`ADSENSE_CLIENT_ID`, `PLACEHOLDER_CLIENT_ID`).
@@ -116,18 +135,41 @@ Behavior notes:
 - AdSense **queues** pushes before its library finishes loading, so calling push
   early is safe — no retry/polling needed.
 - On SPA navigation the component remounts, so only the newly created `<ins>` is
-  initialized. The global script is **not** re-injected (Dioxus dedupes
-  `document::Script` by `src`, and `App` never remounts).
+  initialized. The AdSense library loads once from the static `index.html` script
+  tag and is never re-fetched on navigation.
+
+## 4b. Site verification
+
+Google must verify your site before serving ads. The verification crawler reads
+the **raw HTML**, so the AdSense `<script>` must be in the static `index.html`
+(see §2) — runtime injection is invisible to the crawler.
+
+After setting the publisher ID in `index.html`, rebuild and deploy:
+
+```sh
+dx bundle --release --out-dir ./dist   # produces dist/ which Vercel deploys
+git add index.html dist/
+git commit -m "build: add adsense verification script"
+git push
+```
+
+Then in the AdSense console, request verification of `https://<your-domain>`.
+If it still fails, confirm the script tag with your `client=ca-pub-...` is
+visible in the deployed page's HTML (View Source, *not* the Elements panel).
 
 ## 5. Local development behavior
 
-- **Default (`dx serve`):** ads disabled. No network requests to AdSense, no
-  blank ad boxes. Safe for normal dev work.
-- **`dx serve --features ads` with placeholder ID:** ad slots render nothing and
-  the console warns `[adsense] ADSENSE_CLIENT_ID is unset; ad slot not rendered.`
+- The AdSense library loads from the static `index.html` script tag in **every**
+  build (dev included) — this is required for site verification. It makes one
+  fetch to Google but shows no ads unless a slot is rendered.
+- Ad **slots** only render with the `ads` feature (`dx serve --features ads`)
+  and a non-placeholder `ADSENSE_CLIENT_ID` in `.env`.
+- **`dx serve --features ads` with placeholder ID:** slots render nothing and the
+  console warns `[adsense] ADSENSE_CLIENT_ID is unset; ad slot not rendered.`
 - **`dx serve --features ads` with real ID:** real AdSense loads. Note Google
   only serves real ads on approved/verified domains; on `localhost` you may see
   blank ad spaces or PSAs — that's expected and not a bug in this integration.
+
 
 ## 6. Common errors & troubleshooting
 
