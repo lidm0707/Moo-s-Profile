@@ -20,4 +20,18 @@ fn main() {
             println!("cargo:rustc-env={}={}", key, value);
         }
     }
+
+    // Google AdSense. PLACEHOLDER_CLIENT_ID is the sentinel that marks an unset
+    // publisher ID; the loader skips injection while ADSENSE_CLIENT_ID equals it.
+    // Both are optional and fall back to the same placeholder so the build never
+    // breaks when the env is unset (see components/adsense.rs / main.rs).
+    let placeholder_client_id = std::env::var("PLACEHOLDER_CLIENT_ID")
+        .unwrap_or_else(|_| "ca-pub-0000000000000000".to_string());
+    let adsense_client_id =
+        std::env::var("ADSENSE_CLIENT_ID").unwrap_or_else(|_| placeholder_client_id.clone());
+    println!(
+        "cargo:rustc-env=PLACEHOLDER_CLIENT_ID={}",
+        placeholder_client_id
+    );
+    println!("cargo:rustc-env=ADSENSE_CLIENT_ID={}", adsense_client_id);
 }

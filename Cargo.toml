@@ -22,8 +22,11 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
 [features]
-default = ["web"]
+default = ["web","ads"]
 web = ["dioxus/web"]
+# Enable Google AdSense ad slots + the global AdSense script. OFF by default so
+# `dx serve` makes no real ad requests; enable with `--features ads`.
+ads = []
 
 [build-dependencies]
 dotenvy = "0.15"

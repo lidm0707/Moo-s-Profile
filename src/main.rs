@@ -28,6 +28,9 @@ fn App() -> Element {
     rsx! {
         document::Stylesheet { href: MAIN_CSS  }
         document::Link { rel: "icon", href: FAVICON }
+        if let Some(src) = crate::components::adsense::adsense_script_src() {
+            document::Script { src, crossorigin: "anonymous" }
+        }
         Router::<Route> {}
     }
 }

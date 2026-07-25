@@ -54,17 +54,80 @@ dx build --release
 
 The built files will be in the `dist` directory, ready for deployment.
 
+## Environment Variables
+
+This project reads configuration from a `.env` file at build time (via `build.rs` + `dotenvy`).
+Copy the documented template to get started:
+
+```bash
+cp .env.example .env
+```
+
+Required: `APP_MODE`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`. Optional: AdSense vars
+(see below). `.env` is gitignored — never commit real secrets. Full reference in
+[`.env.example`](.env.example).
+
+## How to Use Google AdSense
+
+AdSense is integrated behind a Cargo feature flag so it is **off by default**
+(no real ad requests during `dx serve`). For the complete reference — setup,
+troubleshooting, and deployment notes — see [`docs/adsense.md`](docs/adsense.md).
+
+**Quick start:**
+
+1. Get your publisher id (`ca-pub-XXXXXXXXXXXXXXXX`) and an ad slot id from the
+   [AdSense console](https://www.google.com/adsense/), and approve your domain.
+2. Set it in `.env` (built-in placeholder disables ads when unset):
+   ```dotenv
+   ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXXXXXXXX
+   ```
+3. Run/build **with the `ads` feature**:
+   ```bash
+   dx serve  --features ads   # preview
+   dx build --release --features ads   # production
+   ```
+4. Drop an ad slot anywhere with the reusable `Adsense` component:
+   ```rust
+   use crate::components::Adsense;
+
+   rsx! {
+       Adsense {
+           ad_slot: "1234567890".to_string(),   // your AdSense slot id
+           // optional (all have sensible defaults):
+           // ad_format: Some("auto".to_string()),
+           // responsive: Some(true),
+           // style: Some("display:block".to_string()),
+           // class: Some("my-ad-wrap".to_string()),
+       }
+   }
+   ```
+
+Notes:
+
+- Without `--features ads`, every `Adsense` renders nothing and the global
+  AdSense script is never injected.
+- The global script is injected exactly once (Dioxus dedupes it in `<head>`);
+  navigation between routes initializes only newly created ad slots.
+- Google only serves real ads on approved domains; on `localhost` you may see
+  blank spaces or PSAs — that's expected.
+
 ## Project Structure
 
 ```
 my_profile/
 ├─ assets/           # Static assets like CSS and images
+├─ docs/             # Feature docs (e.g. adsense.md)
 ├─ src/
-│  └─ main.rs        # Main application code with routing and components
+│  ├─ components/    # UI components (incl. Adsense ad slot)
+│  ├─ features/      # Feature modules (content, etc.)
+│  ├─ hooks/         # Custom hooks
+│  ├─ routes/        # Route definitions and pages
+│  └─ main.rs        # App entry, global head (styles, scripts)
+├─ .env.example      # Documented template for required env vars
 ├─ .github/
 │  └─ workflows/
 │     └─ ci.yml      # GitHub Actions workflow for CI/CD
-├─ Cargo.toml        # Rust project configuration
+├─ Cargo.toml        # Rust project configuration (incl. `ads` feature)
 ├─ Dioxus.toml       # Dioxus-specific configuration
 └─ vercel.json       # Vercel deployment configuration
 ```

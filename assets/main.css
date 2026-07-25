@@ -1364,3 +1364,26 @@ body {
     background-color: #d1d5db;
     color: #9ca3af;
 }
+
+/* ---- Google AdSense slots ---- */
+/* Wrapper created by the Adsense component. A min-height placeholder avoids
+   cumulative layout shift (CLS) before the ad fills. */
+.adsense-wrap {
+    display: block;
+    width: 100%;
+    min-height: 100px;
+    margin: 1rem 0;
+    overflow: hidden;
+}
+
+.adsense-wrap-dark {
+    background-color: #0f1116;
+    border: 1px solid #2a2d3a;
+    border-radius: 8px;
+}
+
+.adsense-wrap-light {
+    background-color: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}

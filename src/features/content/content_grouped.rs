@@ -3,12 +3,14 @@ use content_sdk::models::Content as ContentModel;
 
 use dioxus::prelude::*;
 
+use crate::components::Adsense;
 use crate::features::content::hooks::use_tags::use_tags;
 use crate::features::content::inline_viewer::InlineContentViewer;
 use crate::features::content::tag_filter_bar::TagFilterBar;
 
 const EMPTY_TOPICS: &str = "Select a tag to view topics";
 const EMPTY_CONTENT: &str = "Select a topic to read";
+const DEMO_AD_SLOT: &str = "1234567890";
 
 fn get_query_param(key: &str, query: &str) -> Option<String> {
     query.strip_prefix('?')?.split('&').find_map(|pair| {
@@ -207,6 +209,14 @@ pub fn ContentPage() -> Element {
                         div { class: "empty-state", "{EMPTY_CONTENT}" }
                     }
                 }
+            }
+
+            // Demo ad slot. Renders nothing when the `ads` feature is off or the
+            // publisher ID is the placeholder. Replace DEMO_AD_SLOT with a real
+            // AdSense slot id from your dashboard.
+            Adsense {
+                ad_slot: DEMO_AD_SLOT.to_string(),
+                dark_mode: Some(dark_mode()),
             }
         }
     }

@@ -1,3 +1,4 @@
+pub mod adsense;
 pub mod footer;
 pub mod header;
 pub mod interest_card;
@@ -7,6 +8,7 @@ pub mod skill_tags;
 pub mod theme_toggle;
 pub mod timeline;
 
+pub use adsense::Adsense;
 pub use footer::Footer;
 pub use header::Header;
 pub use interest_card::InterestCard;
