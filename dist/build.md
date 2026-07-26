@@ -15,15 +15,17 @@ dx bundle --release --out-dir ./dist
 
 # 3. copy root-level static files that Dioxus must NOT hash
 #    (ads.txt must be served at exactly /ads.txt for AdSense;
+#     robots.txt must be served at exactly /robots.txt for SEO;
 #     sitemap.xml must be served at exactly /sitemap.xml for SEO;
 #     the Dioxus.toml `static` array hashes filenames, so we copy manually)
 cp ads.txt dist/public/ads.txt
+cp robots.txt dist/public/robots.txt
 # refresh sitemap.xml with the latest published content from Supabase
 node scripts/update-sitemap.mjs
 cp sitemap.xml dist/public/sitemap.xml
 
 # 4. commit & push to deploy
-git add dist/ ads.txt sitemap.xml
+git add dist/ ads.txt robots.txt sitemap.xml
 git commit -m "build: rebuild dist"
 git push
 ```
@@ -67,3 +69,21 @@ them explicitly.
   `cp` above so the deployed sitemap reflects current content. Tag-filtered
   URLs (`/content?tag_id=…`) are intentionally omitted — those are SPA filter
   state, not distinct resources; individual posts are already listed by slug.
+
+## robots.txt (crawler directives)
+
+A `robots.txt` at `https://<your-domain>/robots.txt` tells crawlers what they
+may crawl. Combined with the sitemap reference, it's the standard crawler
+entry point — Google Search Console and Bing Webmaster Tools both fetch it
+first.
+
+- **Source of truth:** [`robots.txt`](../robots.txt) in the project root.
+- **Directives:** `User-agent: *` / `Allow: /` (no restrictions — public
+  profile + blog) plus a `Sitemap:` line pointing at the canonical origin.
+- **Canonical domain:** `https://www.lilidm.com/` (apex redirects to www).
+- **Deployed path:** `dist/public/robots.txt` → served at `/robots.txt`.
+- **Vercel routing:** `vercel.json` has an explicit `/robots.txt` route BEFORE
+  the SPA catch-all so the file is served instead of `index.html`.
+- **Rebuild note:** step 3 above copies it after `dx bundle` — `rm -rf
+  dist/public` wipes it, so always re-copy.
+- **Editing:** text-only file, edit in place. No `lastmod` to bump.
