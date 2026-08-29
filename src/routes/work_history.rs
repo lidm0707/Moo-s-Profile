@@ -1,4 +1,4 @@
-use crate::components::WorkHistoryTimeline;
+use crate::components::{Icon, WorkHistoryTimeline};
 use dioxus::prelude::*;
 
 /// Work history page component displaying professional experience
@@ -10,7 +10,10 @@ pub fn WorkHistory() -> Element {
     rsx! {
         section {
             class: if dark_mode() { "work-history-section" } else { "work-history-section light-mode" },
-            h2 { "💼 Work History" }
+            h2 {
+                Icon { name: "briefcase".to_string(), class: "heading-icon" }
+                span { "Work History" }
+            }
 
             // Timeline component containing all work experience items
             WorkHistoryTimeline {}

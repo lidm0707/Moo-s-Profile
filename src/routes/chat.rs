@@ -1,10 +1,11 @@
+use crate::components::Icon;
 use dioxus::prelude::*;
 use latent_calculator::{Calculator, ParseError};
 use serde::{Deserialize, Serialize};
 
 const USER_AVATAR: Asset = asset!("/assets/profile.jpg");
 const CHAT_LIST_ID: &str = "chat-messages";
-const BOT_SEED_TEXT: &str = "Hi! I'm LatCal \u{1f9ee} \u{2014} ask me math in plain words, e.g. \u{201c}10$ discount 2%\u{201d}.";
+const BOT_SEED_TEXT: &str = "Hi! I'm LatCal — ask me math in plain words, e.g. “10$ discount 2%”.";
 const INPUT_PLACEHOLDER: &str = "ask a math question in plain words\u{2026}";
 const STORAGE_KEY: &str = "latcal.chat.v1";
 
@@ -143,7 +144,10 @@ pub fn Chat() -> Element {
                         if msg.from_user {
                             img { class: "chat-avatar", src: USER_AVATAR, alt: "you" }
                         } else {
-                            span { class: "chat-avatar emoji", "🧮" }
+                            div {
+                                class: "chat-avatar emoji",
+                                Icon { name: "calculator".to_string(), class: "chat-avatar-icon" }
+                            }
                         }
                         div { class: "chat-bubble", "{msg.text}" }
                     }

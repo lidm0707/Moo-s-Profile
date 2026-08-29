@@ -1,3 +1,4 @@
+use crate::utils::duration_since;
 use dioxus::prelude::*;
 
 /// Timeline component displaying work history as a vertical timeline
@@ -22,8 +23,18 @@ pub fn TimelineItem(
     date: String,
     description: String,
     achievements: Vec<String>,
+    start_year: Option<i32>,
+    start_month: Option<u32>,
+    ongoing: Option<bool>,
 ) -> Element {
     let dark_mode = use_context::<Signal<bool>>();
+
+    let date_line = match (start_year, start_month, ongoing) {
+        (Some(y), Some(m), Some(true)) => {
+            format!("{date} · {}", duration_since(y, m))
+        }
+        _ => date,
+    };
 
     rsx! {
         div {
@@ -36,7 +47,7 @@ pub fn TimelineItem(
                 h3 { "{title}" }
                 div {
                     class: "timeline-date",
-                    "{date}"
+                    "{date_line}"
                 }
                 p { "{description}" }
                 if !achievements.is_empty() {
@@ -72,7 +83,10 @@ pub fn WorkHistoryTimeline() -> Element {
         Timeline {
             TimelineItem {
                 title: "General Manager".to_string(),
-                date: "Jan 2022 – Present · 3 years 11 months".to_string(),
+                date: "Jan 2022 – Present".to_string(),
+                start_year: Some(2022),
+                start_month: Some(1),
+                ongoing: Some(true),
                 description: "Leading company-wide digital transformation initiatives and IT strategy management, with a focus on operational efficiency and technology adoption.".to_string(),
                 achievements: vec![
                     "Spearheaded company-wide digital transformation projects, improving operational workflows and collaboration".to_string(),
@@ -84,6 +98,9 @@ pub fn WorkHistoryTimeline() -> Element {
             TimelineItem {
                 title: "Product Owner".to_string(),
                 date: "Dec 2018 – Dec 2021 · 3 years 1 month".to_string(),
+                start_year: None,
+                start_month: None,
+                ongoing: None,
                 description: "Managing product roadmap and delivery lifecycle, bridging business objectives with technical implementation and user needs.".to_string(),
                 achievements: vec![
                     "Orchestrated product roadmap and backlog to align with business objectives and customer needs".to_string(),

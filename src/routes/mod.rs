@@ -1,4 +1,4 @@
-use crate::components::{Footer, Header, Nav, ThemeToggle};
+use crate::components::{Footer, Header, Nav};
 use content_sdk::contexts::{ContentContext, ContentTagsContext, TagContext};
 use content_sdk::utils::config::Config;
 use dioxus::prelude::*;
@@ -61,7 +61,6 @@ pub fn ProfileLayout() -> Element {
         }
     } else {
         rsx! {
-            ThemeToggle {}
             Header {}
             Nav {}
             main {

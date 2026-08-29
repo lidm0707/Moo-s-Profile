@@ -1,3 +1,5 @@
+use crate::components::Icon;
+use chrono::Datelike;
 use dioxus::prelude::*;
 
 /// Footer component displaying copyright information
@@ -5,11 +7,15 @@ use dioxus::prelude::*;
 #[component]
 pub fn Footer() -> Element {
     let dark_mode = use_context::<Signal<bool>>();
+    let year = chrono::Utc::now().year();
 
     rsx! {
         footer {
             class: if dark_mode() { "profile-footer" } else { "profile-footer light-mode" },
-            p { "© 2025 Moo | Built with Rust and Dioxus 🦀" }
+            p {
+                "© {year} Moo | Built with Rust and Dioxus "
+                Icon { name: "crab".to_string(), class: "footer-icon" }
+            }
         }
     }
 }

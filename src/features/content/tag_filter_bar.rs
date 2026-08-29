@@ -1,6 +1,8 @@
 use content_sdk::models::Tag;
 use dioxus::prelude::*;
 
+use crate::components::Icon;
+
 #[component]
 pub fn TagFilterBar(
     tags: Vec<Tag>,
@@ -29,7 +31,8 @@ pub fn TagFilterBar(
                         button {
                             class: "{full_class}",
                             onclick: move |_| on_tag_select.call(tag_id),
-                            "🏷 {tag.name}"
+                            Icon { name: "tag".to_string(), class: "tag-chip-icon" }
+                            "{tag.name}"
                         }
                     }
                 }

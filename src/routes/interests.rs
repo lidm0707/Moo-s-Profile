@@ -1,4 +1,4 @@
-use crate::components::{InterestCard, SkillTagsGroup};
+use crate::components::{Icon, InterestCard, SkillTagsGroup};
 use dioxus::prelude::*;
 
 /// Interests page component displaying personal interests, goals, and skills
@@ -10,7 +10,10 @@ pub fn Interests() -> Element {
     rsx! {
         section {
             class: if dark_mode() { "interests-section" } else { "interests-section light-mode" },
-            h2 { "🌟 About Me & My Interests" }
+            h2 {
+                Icon { name: "star".to_string(), class: "heading-icon" }
+                span { "About Me & My Interests" }
+            }
 
             // About content section
             div {
@@ -20,7 +23,10 @@ pub fn Interests() -> Element {
                 // Goals section
                 div {
                     class: if dark_mode() { "goals" } else { "goals light-mode" },
-                    h3 { "🚀 My Goals" }
+                    h3 {
+                        Icon { name: "rocket".to_string(), class: "heading-icon" }
+                        span { "My Goals" }
+                    }
                     ul {
                         li { "Build cool projects with Rust and Dioxus." }
                         li { "Simplify everyday tasks using ESP32 and automation tools." }
@@ -32,46 +38,49 @@ pub fn Interests() -> Element {
             // Interests grid section
             div {
                 class: if dark_mode() { "interests-grid" } else { "interests-grid light-mode" },
-                h3 { "🔥 Topics That Excite Me" }
+                h3 {
+                    Icon { name: "flame".to_string(), class: "heading-icon" }
+                    span { "Topics That Excite Me" }
+                }
 
                 InterestCard {
-                    icon: "🌿".to_string(),
+                    icon: "leaf".to_string(),
                     title: "Planting".to_string(),
                     description: "Cultivating plants and creating green spaces.".to_string(),
                 }
 
                 InterestCard {
-                    icon: "🤖".to_string(),
+                    icon: "zap".to_string(),
                     title: "Automating Workflows".to_string(),
                     description: "Streamlining processes and increasing efficiency through automation.".to_string(),
                 }
 
                 InterestCard {
-                    icon: "🧠".to_string(),
+                    icon: "brain".to_string(),
                     title: "Science & Math".to_string(),
                     description: "Exploring the fundamentals of the natural world.".to_string(),
                 }
 
                 InterestCard {
-                    icon: "⚙️".to_string(),
+                    icon: "cpu".to_string(),
                     title: "ESP32 Projects".to_string(),
                     description: "Building IoT devices and embedded systems.".to_string(),
                 }
 
                 InterestCard {
-                    icon: "💰".to_string(),
+                    icon: "coin".to_string(),
                     title: "Crypto".to_string(),
                     description: "Understanding blockchain technology and digital assets.".to_string(),
                 }
 
                 InterestCard {
-                    icon: "🦀".to_string(),
+                    icon: "crab".to_string(),
                     title: "Rust".to_string(),
                     description: "Building safe and performant applications with Rust.".to_string(),
                 }
 
                 InterestCard {
-                    icon: "🖥️".to_string(),
+                    icon: "code".to_string(),
                     title: "Dioxus".to_string(),
                     description: "Creating cross-platform user interfaces with Rust.".to_string(),
                 }
@@ -80,7 +89,10 @@ pub fn Interests() -> Element {
             // Skills section
             div {
                 class: if dark_mode() { "skills-section" } else { "skills-section light-mode" },
-                h3 { "🔧 Skills" }
+                h3 {
+                    Icon { name: "wrench".to_string(), class: "heading-icon" }
+                    span { "Skills" }
+                }
 
                 // Programming Languages & Frameworks
                 div {

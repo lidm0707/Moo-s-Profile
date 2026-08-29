@@ -4,7 +4,19 @@ Vercel deploys the committed `dist/` directly (`vercel.json` has
 `"outputDirectory": "dist/public"` and no build command), so every deploy is a
 committed bundle.
 
-## Production bundle
+## Make targets (preferred)
+
+```sh
+make dev       # dx serve (hot reload)
+make test      # cargo check && cargo clippy
+make sitemap   # scan routes + Supabase content -> sitemap.xml
+make build     # rm -rf dist/public && dx bundle --release
+make prepare   # sitemap + build + copy ads/robots/sitemap into dist/public
+```
+
+`make prepare` is the full production pipeline (steps below).
+
+## Production bundle (manual equivalent)
 
 ```sh
 # 1. clean previous output (avoids stale hashed assets accumulating)
