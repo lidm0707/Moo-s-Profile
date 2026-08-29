@@ -35,6 +35,7 @@ pub fn ModalContentBody(content: ContentModel, tags_ctx: ContentTagsContext) -> 
         }
         div {
             class: if dark_mode() { "modal-content-body" } else { "modal-content-body light-mode" },
+            onclick: crate::utils::open_external_links_in_new_tab,
             dangerous_inner_html: "{body_html}"
         }
         div {

@@ -74,6 +74,12 @@ fn icon_shapes(name: &str) -> Element {
         "code" => rsx! {
             path { d: "m16 18 6-6-6-6M8 6l-6 6 6 6" }
         },
+        "share" => rsx! {
+            circle { cx: "18", cy: "5", r: "3" }
+            circle { cx: "6", cy: "12", r: "3" }
+            circle { cx: "18", cy: "19", r: "3" }
+            path { d: "m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98" }
+        },
         "tag" => rsx! {
             path { d: "M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" }
             circle { cx: "7.5", cy: "7.5", r: "0.5", fill: "currentColor" }

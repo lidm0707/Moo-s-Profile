@@ -1986,10 +1986,12 @@ dependencies = [
  "content_sdk",
  "dioxus",
  "dotenvy",
+ "js-sys",
  "latent-calculator",
  "serde",
  "serde_json",
  "wasm-bindgen",
+ "wasm-bindgen-futures",
  "web-sys",
 ]
 

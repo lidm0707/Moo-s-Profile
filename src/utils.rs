@@ -1,4 +1,53 @@
 use chrono::{Datelike, Utc};
+use dioxus::prelude::*;
+use wasm_bindgen::JsCast;
+
+const HTTP_PREFIX: &str = "http";
+const ANCHOR_SELECTOR: &str = "a";
+const NEW_TAB_TARGET: &str = "_blank";
+
+/// Click handler for rendered markdown bodies: opens external links in a new
+/// tab; relative links and `#anchors` keep the browser's default behavior.
+pub fn open_external_links_in_new_tab(event: Event<MouseData>) {
+    let mouse_data = event.data();
+    let Some(mouse_event) = mouse_data.downcast::<web_sys::MouseEvent>() else {
+        return;
+    };
+    let Some(target) = mouse_event.target() else {
+        return;
+    };
+    let Ok(element) = target.dyn_into::<web_sys::Element>() else {
+        return;
+    };
+    let Some(anchor) = element.closest(ANCHOR_SELECTOR).ok().flatten() else {
+        return;
+    };
+    let Some(href) = anchor.get_attribute("href") else {
+        return;
+    };
+    // Only absolute http(s) links are external; `#fragments`, `/routes`,
+    // `mailto:` etc. keep their default behavior.
+    if !href.starts_with(HTTP_PREFIX) {
+        return;
+    }
+    let same_origin = web_sys::window()
+        .and_then(|w| w.location().origin().ok())
+        .is_some_and(|origin| href.contains(&origin));
+    if same_origin {
+        return;
+    }
+    if let Some(window) = web_sys::window() {
+        let _ = window.open_with_url_and_target(&href, NEW_TAB_TARGET);
+        event.prevent_default();
+    }
+}
+
+/// Best-effort clipboard write (secure contexts only; failures are silent).
+pub fn copy_to_clipboard(text: &str) {
+    if let Some(window) = web_sys::window() {
+        let _ = window.navigator().clipboard().write_text(text);
+    }
+}
 
 /// Human duration between a month and today, e.g. "3 years 11 months".
 pub fn duration_since(start_year: i32, start_month: u32) -> String {
