@@ -38,7 +38,9 @@ sitemap:
 build: clean sitemap
 	$(DX) bundle --release --out-dir ./dist
 	@for f in $(STATIC_FILES); do cp $$f $(DIST_DIR)/$$f; done
-	@echo "Composed $(DIST_DIR): bundle + $(STATIC_FILES)"
+	@cp assets/profile.jpg $(DIST_DIR)/og-image.jpg
+	@node scripts/generate-content-meta.mjs
+	@echo "Composed $(DIST_DIR): bundle + $(STATIC_FILES) + og-image.jpg + content meta pages"
 
 ## prepare: alias of build (full production pipeline)
 prepare: build
