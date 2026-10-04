@@ -27,6 +27,18 @@ fn replace_url(url: &str) {
     }
 }
 
+async fn fetch_topic_content(
+    ct_ctx: ContentTagsContext,
+    c_ctx: ContentContext,
+    tag_id: i32,
+) -> Result<Vec<ContentModel>, String> {
+    let ids = ct_ctx.get_content_ids_for_tag(tag_id).await?;
+    if ids.is_empty() {
+        return Ok(vec![]);
+    }
+    c_ctx.get_content_by_ids(&ids).await
+}
+
 #[component]
 pub fn ContentPage() -> Element {
     let dark_mode = use_context::<Signal<bool>>();
@@ -35,6 +47,7 @@ pub fn ContentPage() -> Element {
     let mut content_loading = use_signal(|| false);
     let mut selected_content = use_signal(|| None::<ContentModel>);
     let mut url_consumed = use_signal(|| false);
+    let mut fetch_error = use_signal(|| None::<String>);
 
     let tag_ctx = use_context::<TagContext>();
     let content_ctx = use_context::<ContentContext>();
@@ -72,16 +85,15 @@ pub fn ContentPage() -> Element {
                 let c_ctx = content_ctx_for_effect.clone();
                 let ct_ctx = ct_ctx_for_effect.clone();
                 spawn(async move {
-                    let ids = ct_ctx
-                        .get_content_ids_for_tag(tag_id)
-                        .await
-                        .unwrap_or_default();
-                    let content = if ids.is_empty() {
-                        vec![]
-                    } else {
-                        c_ctx.get_content_by_ids(&ids).await.unwrap_or_default()
-                    };
-                    tag_content.set(content);
+                    match fetch_topic_content(ct_ctx, c_ctx, tag_id).await {
+                        Ok(content) => {
+                            fetch_error.set(None);
+                            tag_content.set(content);
+                        }
+                        Err(e) => {
+                            fetch_error.set(Some(e));
+                        }
+                    }
                     content_loading.set(false);
                     if initial_content_id().is_none() {
                         replace_url(&format!("/content?tag_id={}", tag_id));
@@ -124,16 +136,15 @@ pub fn ContentPage() -> Element {
                         let c_ctx = content_ctx.clone();
                         let ct_ctx = ct_ctx_for_spawn.clone();
                         spawn(async move {
-                            let ids = ct_ctx
-                                .get_content_ids_for_tag(id)
-                                .await
-                                .unwrap_or_default();
-                            let content = if ids.is_empty() {
-                                vec![]
-                            } else {
-                                c_ctx.get_content_by_ids(&ids).await.unwrap_or_default()
-                            };
-                            tag_content.set(content);
+                            match fetch_topic_content(ct_ctx, c_ctx, id).await {
+                                Ok(content) => {
+                                    fetch_error.set(None);
+                                    tag_content.set(content);
+                                }
+                                Err(e) => {
+                                    fetch_error.set(Some(e));
+                                }
+                            }
                             content_loading.set(false);
                         });
                     } else {
@@ -154,6 +165,8 @@ pub fn ContentPage() -> Element {
                         div { class: "loading", "Loading topics..." }
                     } else if selected_tag().is_none() {
                         div { class: "empty-state", "{EMPTY_TOPICS}" }
+                    } else if let Some(err) = fetch_error() {
+                        div { class: "empty-state", "Failed to fetch topics: {err}" }
                     } else if tag_content().is_empty() {
                         div { class: "empty-state", "No topics for this tag" }
                     } else {
