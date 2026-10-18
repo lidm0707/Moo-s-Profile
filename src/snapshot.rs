@@ -34,6 +34,15 @@ pub fn content_by_ids(ids: &[i32]) -> Vec<Content> {
         .collect()
 }
 
+pub fn all_published() -> Vec<Content> {
+    snapshot()
+        .content
+        .iter()
+        .filter(|c| c.status == STATUS_PUBLISHED)
+        .cloned()
+        .collect()
+}
+
 pub fn content_by_slug(slug: &str) -> Option<Content> {
     snapshot()
         .content

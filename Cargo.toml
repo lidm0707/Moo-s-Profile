@@ -32,3 +32,11 @@ ads = []
 
 [build-dependencies]
 dotenvy = "0.15"
+
+# wasm size: LTO + size-opt cut the bundle substantially (PageSpeed "unused JS").
+# No `strip = true` here: stripping custom sections before wasm-bindgen breaks it.
+[profile.release]
+opt-level = "z"
+lto = "fat"
+codegen-units = 1
+panic = "abort"

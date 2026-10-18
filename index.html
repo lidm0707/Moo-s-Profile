@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="UTF-8">
         <title>Moo's Profile — Web Content & Chatbot</title>
         <meta name="description" content="Moo's profile, web content, and an embedded client-side chatbot. Built with Rust, Dioxus, and Supabase.">
+                <link rel="canonical" href="https://www.lilidm.com/">
         <!-- Link preview (OG / Twitter). Static so crawlers that don't run JS can read them. -->
         <meta property="og:type" content="website">
         <meta property="og:site_name" content="Moo's Profile">
@@ -19,6 +20,13 @@
         <meta name="twitter:title" content="Moo's Profile — Web Content & Chatbot">
         <meta name="twitter:description" content="Profile, web content, and an embedded chatbot. Built with Rust, Dioxus, and Supabase.">
         <meta name="twitter:image" content="https://www.lilidm.com/og-image.jpg">
+        <!-- Google Fonts: loaded non-blocking (print-media swap) to avoid render-blocking CSS -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" media="print" onload="this.media='all'">
+        <noscript>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap">
+        </noscript>
         <!-- Google CMP (Funding Choices) — must load BEFORE adsbygoogle so consent is established first. Replace pub-XXXX with your own publisher id for other sites. -->
         <script async src="https://fundingchoicesmessages.google.com/i/pub-3526470154848781?ers=1"></script>
         <script>(function() {

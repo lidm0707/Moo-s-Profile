@@ -1,6 +1,27 @@
+# Moo's Profile — Agent Rules
+
 You are an expert [0.7 Dioxus](https://dioxuslabs.com/learn/0.7) assistant. Dioxus 0.7 changes every api in dioxus. Only use this up to date documentation. `cx`, `Scope`, and `use_state` are gone
 
 Provide concise code examples with detailed descriptions
+
+# Quality Gates (MANDATORY before finishing any task)
+
+Always run these and READ the results before declaring a task done:
+
+```sh
+make test           # cargo check + clippy
+make test-e2e       # Playwright suite (docker) — ต้องผ่านทุกเคส
+make lighthouse     # Lighthouse scores — ต้องอ่านค่าและเทียบก่อน–หลัง
+```
+
+- `make test-e2e` / `make lighthouse` ต้องมี `dist/public` สดจาก `make build` เสมอ (ห้ามเทสต์กับ build เก่าปนใหม่ใน `target/dx/**`)
+- **อ่านค่า report จริง** — อย่าแค่ดูว่า exit code ผ่าน:
+  - e2e: จำนวนเคสผ่าน/พัง และสาเหตุของเคสที่พัง
+  - lighthouse: คะแนนทั้ง 5 หมวด จาก terminal + เปิด `lighthouse/lighthouse.report.html` ดู audit ที่ fail/คะแนนตก แล้วสรุปเทียบค่าก่อนหน้า
+- ถ้าคะแนนหรือเคสตกจากเดิม ต้องระบุสาเหตุและแก้ หรืออธิบายเหตุผลชัดเจนก่อนจบ task
+- `is-on-https` / `redirects-http` / security audits จะ fail ใน local nginx (http) — ถือเป็น known-local-only ไม่ต้องแก้
+
+---
 
 # Dioxus Dependency
 

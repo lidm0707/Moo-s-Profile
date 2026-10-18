@@ -55,7 +55,7 @@ async function loadSupabaseCreds() {
 }
 
 async function fetchPublishedContent({ baseUrl, anonKey }) {
-  const qs = "select=slug,title,body&status=eq.published&order=created_at.desc";
+  const qs = "select=slug,title,body,created_at&status=eq.published&order=created_at.desc";
   const res = await fetch(`${baseUrl}/${REST_PATH}/content?${qs}`, {
     headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}`, Accept: "application/json" },
   });
@@ -86,7 +86,19 @@ function escapeHtml(value) {
     .replace(/'/g, "&apos;");
 }
 
-function metaBlock({ title, description, url, image }) {
+function metaBlock({ title, description, url, image, datePublished }) {
+  const jsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    datePublished,
+    url,
+    image,
+    mainEntityOfPage: url,
+    author: { "@type": "Person", name: "Moo" },
+    publisher: { "@type": "Organization", name: "Moo's Profile" },
+    description,
+  });
   return [
     `<title>${escapeHtml(title)}</title>`,
     `<meta name="description" content="${escapeHtml(description)}">`,
@@ -100,19 +112,25 @@ function metaBlock({ title, description, url, image }) {
     `<meta name="twitter:title" content="${escapeHtml(title)}">`,
     `<meta name="twitter:description" content="${escapeHtml(description)}">`,
     `<meta name="twitter:image" content="${escapeHtml(image)}">`,
+    `<link rel="canonical" href="${escapeHtml(url)}">`,
+    `<script type="application/ld+json">${jsonLd}</script>`,
   ].join("\n        ");
 }
 
 function injectMeta(templateHtml, metaTags) {
+  const lines = metaTags.split("\n");
   let html = templateHtml;
+  // Replacement strings must go through functions so `$` sequences in user
+  // content (titles, excerpts) are never interpreted as match patterns.
   // Replace the generic <title>…
-  html = html.replace(/<title>[\s\S]*?<\/title>/, metaTags.split("\n")[0]);
+  html = html.replace(/<title>[\s\S]*?<\/title>/, () => lines[0]);
   // Replace the generic description…
-  html = html.replace(/<meta name="description"[^>]*>/, metaTags.split("\n")[1]);
-  // Replace the whole generic OG/Twitter block (between the marker comment and the twitter:image tag)
+  html = html.replace(/<meta name="description"[^>]*>/, () => lines[1]);
+  // Replace the whole generic OG/Twitter block (between the marker comment and
+  // the twitter:image tag); remaining lines add canonical + JSON-LD.
   html = html.replace(
     /<!-- Link preview[\s\S]*?<meta name="twitter:image"[^>]*>/,
-    metaTags.split("\n").slice(2).join("\n        "),
+    () => lines.slice(2).join("\n        "),
   );
   return html;
 }
@@ -148,6 +166,7 @@ async function main() {
       description: bodyToExcerpt(row.body),
       url,
       image: DEFAULT_OG_IMAGE,
+      datePublished: row.created_at,
     });
     const html = injectMeta(template, meta);
     const outDir = path.join(CONTENT_DIR, row.slug);

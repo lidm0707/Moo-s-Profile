@@ -40,7 +40,7 @@ pub fn ProfileLayout() -> Element {
     if is_standalone {
         rsx! {
             Nav {}
-            div {
+            main {
                 class: if dark_mode() { "content-layout" } else { "content-layout light-mode" },
                 Outlet::<Route> {}
             }

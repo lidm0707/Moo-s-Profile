@@ -1,0 +1,23 @@
+# E2E harness: serves the production build (./dist/public) with nginx and runs
+# the Playwright suite against it. Build first (`make build`), then:
+#   docker compose -f docker/docker-compose.yml up --build --exit-code-from e2e
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ../dist/public:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+  e2e:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.e2e
+    depends_on:
+      - web
+    environment:
+      BASE_URL: http://web:80
+      SNAPSHOT_PATH: /app/snapshot/content_snapshot.json
+    # `web` answers immediately; a beat avoids first-request races.
+    command: sh -c "sleep 2 && npx playwright test"

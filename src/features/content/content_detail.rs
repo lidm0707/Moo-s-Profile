@@ -1,53 +1,40 @@
 use dioxus::prelude::*;
 
-use crate::routes::Route;
+use crate::features::content::content_grouped::ContentPage;
 use crate::snapshot;
 
-const LOADING_TEXT: &str = "Loading content...";
+const NOT_FOUND: &str = "Content not found";
 
 /// Entry point for `/content/:slug`.
 ///
 /// The slug URL is the canonical, SEO-friendly link (the one listed in
-/// `sitemap.xml`). It does not render its own layout — it resolves the slug to
-/// a content id + first tag and hands control to `ContentPage` via the shared
-/// `initial_query` signal + a route replace. Result: the slug route looks
-/// identical to browsing from the index (tag bar + topics list + viewer).
+/// `sitemap.xml`). It renders the full browser UI directly at the slug URL —
+/// no route replace — so crawlers and users stay on the canonical address.
+/// The first tag of the content is pre-selected to populate the topics list.
 #[component]
 pub fn ContentDetail(slug: String) -> Element {
-    let mut initial_query = use_context::<Signal<String>>();
-    let nav = navigator();
-
-    let mut resolved = use_signal(|| false);
-
-    use_effect(move || {
-        if resolved() {
-            return;
-        }
-        resolved.set(true);
-
-        let Some(content) = snapshot::content_by_slug(&slug) else {
-            return;
+    let Some(content) = snapshot::content_by_slug(&slug) else {
+        return rsx! {
+            section {
+                class: "content-page-layout",
+                div { class: "empty-state", "{NOT_FOUND}" }
+            }
         };
-        let Some(content_id) = content.id else {
-            return;
-        };
-
-        initial_query.set(build_deep_link_query(content_id));
-        nav.replace(Route::ContentPage {});
-    });
+    };
 
     rsx! {
-        section {
-            class: "content-page-layout",
-            div { class: "loading", "{LOADING_TEXT}" }
-        }
+        ContentPage { deep_link: build_deep_link_query(content.id) }
     }
 }
 
-/// Builds the `?tag_id=…&content_id=…` query for `ContentPage`'s deep-link
-/// effect. Uses the content's first tag if any; otherwise just the content id
-/// (the inline viewer still renders, the topics list just stays empty).
-fn build_deep_link_query(content_id: i32) -> String {
+/// Builds the `?tag_id=…&content_id=…` query consumed by `ContentPage`'s
+/// deep-link effect. Uses the content's first tag if any; otherwise just the
+/// content id (the inline viewer still renders, the topics list just stays
+/// empty).
+fn build_deep_link_query(content_id: Option<i32>) -> String {
+    let Some(content_id) = content_id else {
+        return String::new();
+    };
     let content_id_part = format!("content_id={}", content_id);
     match snapshot::tags_for_content(content_id)
         .first()

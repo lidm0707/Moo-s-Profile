@@ -1,0 +1,21 @@
+# Playwright runner: installs deps from e2e/package.json (so the
+# @playwright/test version and browser builds always match), then runs the
+# suite against the `web` service.
+FROM node:22-slim
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY e2e/package.json ./
+RUN npm install && npx playwright install --with-deps chromium
+
+COPY e2e/ ./
+COPY assets/content_snapshot.json ./snapshot/content_snapshot.json
+
+ENV BASE_URL=http://web:80
+ENV SNAPSHOT_PATH=/app/snapshot/content_snapshot.json
+
+CMD ["npx", "playwright", "test"]

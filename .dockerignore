@@ -1,0 +1,11 @@
+target/
+dist/
+dist_release_tmp/
+.playwright-mcp/
+.vercel/
+.git/
+e2e/node_modules/
+e2e/test-results/
+e2e/playwright-report/
+docs/
+*.md

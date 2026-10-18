@@ -4,12 +4,13 @@
 DX             := dx
 SITEMAP_SCRIPT := scripts/update-sitemap.mjs
 SNAPSHOT_SCRIPT := scripts/fetch-content-snapshot.mjs
+LLMS_SCRIPT := scripts/generate-llms.mjs
 DIST_DIR       := dist/public
 
 # Root-level files that must be served un-hashed at exactly /<name>
-STATIC_FILES   := ads.txt robots.txt sitemap.xml
+STATIC_FILES   := ads.txt robots.txt sitemap.xml llms.txt
 
-.PHONY: help dev check test clean snapshot sitemap prepare
+.PHONY: help dev check test clean snapshot sitemap llms prepare e2e-install test-e2e lighthouse
 
 help:
 	@grep -E '^[a-z-]+:' $(MAKEFILE_LIST) | awk -F: '{print "  make " $$1}'
@@ -26,6 +27,18 @@ check:
 test: check
 	cargo clippy -- -D warnings
 
+## e2e-install: install Playwright + browsers for local (non-docker) runs
+e2e-install:
+	cd e2e && npm install && npx playwright install chromium
+
+## test-e2e: run Playwright suite against ./dist/public in Docker (run `make build` first)
+test-e2e:
+	docker compose -f docker/docker-compose.yml up --build --abort-on-container-exit --exit-code-from e2e
+
+## lighthouse: PageSpeed-style scores against ./dist/public (run `make build` first)
+lighthouse:
+	docker compose -f docker/docker-compose.lighthouse.yml up --build --abort-on-container-exit --exit-code-from lighthouse
+
 ## clean: remove previous dist output + target build artifacts
 clean:
 	rm -rf $(DIST_DIR)
@@ -39,9 +52,15 @@ sitemap:
 snapshot:
 	node $(SNAPSHOT_SCRIPT)
 
+## llms: generate llms.txt for AI agents from the content snapshot
+llms:
+	node $(LLMS_SCRIPT)
+
 ## build: snapshot + sitemap scan + clean old dist + fresh release bundle + compose statics
 build: clean snapshot sitemap
 	$(DX) bundle --release --out-dir ./dist
+	@node scripts/minify-css.mjs
+	@node $(LLMS_SCRIPT)
 	@for f in $(STATIC_FILES); do cp $$f $(DIST_DIR)/$$f; done
 	@cp assets/profile.jpg $(DIST_DIR)/og-image.jpg
 	@cp assets/content_snapshot.json $(DIST_DIR)/content_snapshot.json
