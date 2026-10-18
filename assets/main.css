@@ -1811,22 +1811,6 @@ a.content-topics-item {
     margin-bottom: 0.9rem;
 }
 
-/* ---- Pre-wasm static shell (LCP paint before Wasm boots) ---- */
-.boot-shell {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 60vh;
-    text-align: center;
-    color: #cfc6e2;
-}
-
-.boot-shell h1 {
-    font-size: 2rem;
-    margin-bottom: 0.75rem;
-}
-
 /* ---- Right-hand ad rail ---- */
 .ad-rail {
     position: fixed;
