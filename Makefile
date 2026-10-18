@@ -5,6 +5,7 @@ DX             := dx
 SITEMAP_SCRIPT := scripts/update-sitemap.mjs
 SNAPSHOT_SCRIPT := scripts/fetch-content-snapshot.mjs
 LLMS_SCRIPT := scripts/generate-llms.mjs
+ARD_SCRIPT := scripts/generate-ard.mjs
 DIST_DIR       := dist/public
 
 # Root-level files that must be served un-hashed at exactly /<name>
@@ -56,11 +57,16 @@ snapshot:
 llms:
 	node $(LLMS_SCRIPT)
 
+## ard: generate .well-known/ard.json (+ legacy ai-catalog.json) for ARD discovery
+ard:
+	node $(ARD_SCRIPT)
+
 ## build: snapshot + sitemap scan + clean old dist + fresh release bundle + compose statics
 build: clean snapshot sitemap
 	$(DX) bundle --release --out-dir ./dist
 	@node scripts/minify-css.mjs
 	@node $(LLMS_SCRIPT)
+	@node $(ARD_SCRIPT)
 	@for f in $(STATIC_FILES); do cp $$f $(DIST_DIR)/$$f; done
 	@cp assets/profile.jpg $(DIST_DIR)/og-image.jpg
 	@cp assets/content_snapshot.json $(DIST_DIR)/content_snapshot.json

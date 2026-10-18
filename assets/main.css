@@ -1811,6 +1811,22 @@ a.content-topics-item {
     margin-bottom: 0.9rem;
 }
 
+/* ---- Pre-wasm static shell (LCP paint before Wasm boots) ---- */
+.boot-shell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    text-align: center;
+    color: #cfc6e2;
+}
+
+.boot-shell h1 {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
 /* ---- Right-hand ad rail ---- */
 .ad-rail {
     position: fixed;
@@ -1844,10 +1860,20 @@ a.content-topics-item {
 
     /* Lock the ad height: a bottom-anchored container grows upward, and the
        moving top edge registers as a layout shift. AdSense responsive fits
-       the ad to a fixed-height container. */
+       the ad to a fixed-height container; hard-clip the rail and any injected
+       iframe so nothing can push the top edge regardless of what AdSense
+       sets inline. */
+    /* AdSense sets inline styles on the rail and <ins>; only !important wins.
+       Lock the height so the bottom-anchored top edge can never move (CLS). */
+    .ad-rail {
+        height: 266px !important;
+        max-height: 266px !important;
+        overflow: hidden !important;
+    }
+
     .ad-rail ins {
         display: block;
-        height: 250px;
+        overflow: hidden;
     }
 }
 

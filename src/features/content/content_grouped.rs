@@ -42,12 +42,18 @@ where
 }
 
 #[component]
-pub fn ContentPage(#[props(default)] deep_link: Option<String>) -> Element {
+pub fn ContentPage(
+    // ReadOnlySignal so the deep-link effect re-runs when slug→slug navigation
+    // reuses this mounted component with a new link.
+    #[props(default)] deep_link: ReadSignal<Option<String>>,
+) -> Element {
     let dark_mode = use_context::<Signal<bool>>();
     let mut selected_tag = use_signal(|| None::<i32>);
     let mut tag_content = use_signal(Vec::<ContentModel>::new);
     let mut selected_content = use_signal(|| None::<ContentModel>);
-    let mut link_consumed = use_signal(|| false);
+    // Track the last consumed deep link so a *changed* link (e.g. navigating
+    // between slugs, which reuses the mounted component) is applied again.
+    let mut last_consumed = use_signal(|| Option::<String>::None);
 
     let tags_list = snapshot::all_tags();
 
@@ -65,18 +71,24 @@ pub fn ContentPage(#[props(default)] deep_link: Option<String>) -> Element {
     let nav = navigator();
 
     use_effect(move || {
-        if link_consumed() {
-            return;
-        }
-        link_consumed.set(true);
-        let query = match deep_link.clone() {
+        let query = match deep_link() {
             Some(link) => {
                 // Don't let a stale deep link leak into later route mounts.
                 initial_query.set(String::new());
-                link
+                Some(link)
             }
-            None => initial_query(),
+            None => {
+                let q = initial_query();
+                (!q.is_empty()).then_some(q)
+            }
         };
+        let Some(query) = query else {
+            return;
+        };
+        if last_consumed().as_deref() == Some(query.as_str()) {
+            return;
+        }
+        last_consumed.set(Some(query.clone()));
         let Some(tag_id_str) = get_query_param("tag_id", &query) else {
             return;
         };

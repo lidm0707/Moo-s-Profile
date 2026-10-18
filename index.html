@@ -7,6 +7,8 @@
         <title>Moo's Profile — Web Content & Chatbot</title>
         <meta name="description" content="Moo's profile, web content, and an embedded client-side chatbot. Built with Rust, Dioxus, and Supabase.">
                 <link rel="canonical" href="https://www.lilidm.com/">
+                <!-- ARD (Agentic Resource Discovery) manifest for AI agent discovery -->
+                <link rel="ard" href="/.well-known/ard.json">
         <!-- Link preview (OG / Twitter). Static so crawlers that don't run JS can read them. -->
         <meta property="og:type" content="website">
         <meta property="og:site_name" content="Moo's Profile">
@@ -23,9 +25,9 @@
         <!-- Google Fonts: loaded non-blocking (print-media swap) to avoid render-blocking CSS -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" media="print" onload="this.media='all'">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
         <noscript>
-            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap">
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
         </noscript>
         <!-- Google CMP (Funding Choices) — must load BEFORE adsbygoogle so consent is established first. Replace pub-XXXX with your own publisher id for other sites. -->
         <script async src="https://fundingchoicesmessages.google.com/i/pub-3526470154848781?ers=1"></script>
@@ -45,19 +47,48 @@
             }
             signalGooglefcPresent();
         })();</script>
-        <!-- Google AdSense library — replace ca-pub-XXXX with your own publisher id for other sites. -->
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3526470154848781"
-             crossorigin="anonymous"></script>
+        <!-- Google AdSense library — injected AFTER first load + idle so the ad
+             never becomes the LCP element and its long tasks don't hurt TBT/TTI.
+             Keep the `adsbygoogle.js?client=` marker intact: build.rs parses the
+             publisher id from it. -->
+        <script>
+        (function () {
+            var CLIENT_ID = 'ca-pub-3526470154848781';
+            var SRC = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3526470154848781';
+            var INJECT_DELAY_MS = 2000;
+            var injected = false;
+            function inject() {
+                if (injected) return;
+                injected = true;
+                var s = document.createElement('script');
+                s.async = true;
+                s.src = SRC;
+                s.crossOrigin = 'anonymous';
+                document.head.appendChild(s);
+            }
+            function onReady() {
+                if ('requestIdleCallback' in window) {
+                    requestIdleCallback(inject, { timeout: INJECT_DELAY_MS });
+                } else {
+                    setTimeout(inject, INJECT_DELAY_MS);
+                }
+            }
+            if (document.readyState === 'complete') { onReady(); }
+            else { window.addEventListener('load', onReady, { once: true }); }
+        })();
+        </script>
     </head>
     <body>
-        <div id="main"></div>
+        <div id="main"><!-- STATIC-SHELL (pre-wasm paint) --><div class="boot-shell"><h1>Moo's Profile</h1><p>Select a topic to read</p></div></div>
         <div class="ad-rail">
-            <ins class="adsbygoogle"
+            <!-- .ad-frame absorbs AdSense's parent style injection
+                 (height:auto !important) so .ad-rail stays size-locked (CLS). -->
+            <div class="ad-frame"><ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-3526470154848781"
                  data-ad-slot="7363546319"
                  data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
+                 data-full-width-responsive="false"></ins></div>
             <script>
                  (adsbygoogle = window.adsbygoogle || []).push({});
             </script>

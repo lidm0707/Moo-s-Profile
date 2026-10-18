@@ -7,6 +7,8 @@
     { "src": "/robots.txt", "dest": "/dist/public/robots.txt", "headers": { "Cache-Control": "public, max-age=3600", "X-Content-Type-Options": "nosniff" } },
     { "src": "/sitemap.xml", "dest": "/dist/public/sitemap.xml", "headers": { "Cache-Control": "public, max-age=3600", "X-Content-Type-Options": "nosniff" } },
     { "src": "/llms.txt", "dest": "/dist/public/llms.txt", "headers": { "Cache-Control": "public, max-age=86400", "X-Content-Type-Options": "nosniff" } },
+    { "src": "/.well-known/ard.json", "dest": "/dist/public/.well-known/ard.json", "headers": { "Cache-Control": "public, max-age=86400", "X-Content-Type-Options": "nosniff" } },
+    { "src": "/.well-known/ai-catalog.json", "dest": "/dist/public/.well-known/ai-catalog.json", "headers": { "Cache-Control": "public, max-age=86400", "X-Content-Type-Options": "nosniff" } },
     { "src": "/content_snapshot.json", "dest": "/dist/public/content_snapshot.json", "headers": { "Cache-Control": "public, max-age=86400" } },
     {
       "src": "/assets/(.*)",

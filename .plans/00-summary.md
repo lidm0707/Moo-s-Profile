@@ -39,3 +39,5 @@ One-file summary of all completed plans (originals deleted). Each entry: what wa
 - Minimal Japanese restyle for interests/work-history: ghost inline cards, hairline rules, left-edge orange/purple accents, `・` bullets, ink-fade timeline rail, auto-computed job durations (`src/utils.rs::duration_since`, ongoing roles tick automatically).
 - ThemeToggle removed (dark mode hardwired). AdSense `<ins>` moved into `.ad-rail` right-hand container (`index.html` + CSS, docks to bottom flow under 1280px).
 - Footer year auto from `chrono`.
+
+## 07 (archive) — see `07-ard-manifest.md`
