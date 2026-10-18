@@ -90,6 +90,9 @@
                 <p style="font-size:14px;color:#8a7fa8;margin:16px 0 0">Loading…</p>
             </div>
         </div>
+        <!-- Content data ships as a separate JSON file (fetched at boot by the
+             app); preloading downloads it in parallel with the wasm. -->
+        <link rel="preload" href="/content_snapshot.json" as="fetch" crossorigin>
         <div id="main"></div>
         <script>
         (function () {
@@ -111,6 +114,7 @@
         <div class="ad-rail">
             <!-- .ad-frame absorbs AdSense's parent style injection
                  (height:auto !important) so .ad-rail stays size-locked (CLS). -->
+            <button type="button" class="ad-rail-close" aria-label="Close ad" onclick="this.parentElement.style.display='none'">×</button>
             <div class="ad-frame"><ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-3526470154848781"

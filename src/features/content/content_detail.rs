@@ -14,10 +14,16 @@ const NOT_FOUND: &str = "Content not found";
 #[component]
 pub fn ContentDetail(slug: String) -> Element {
     let Some(content) = snapshot::content_by_slug(&slug) else {
+        // Snapshot streams in at boot; don't flash "not found" before it lands.
+        let msg = if snapshot::loaded() {
+            NOT_FOUND
+        } else {
+            snapshot::LOADING
+        };
         return rsx! {
             section {
                 class: "content-page-layout",
-                div { class: "empty-state", "{NOT_FOUND}" }
+                div { class: "empty-state", "{msg}" }
             }
         };
     };

@@ -1383,10 +1383,55 @@ a.content-topics-item {
    cumulative layout shift (CLS) before the ad fills. */
 .adsense-wrap {
     display: block;
+    position: relative;
     width: 100%;
     min-height: 100px;
     margin: 1rem 0;
     overflow: hidden;
+}
+
+.adsense-close {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    z-index: 500;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid #362e48;
+    border-radius: 50%;
+    background-color: rgba(23, 20, 32, 0.85);
+    color: #cbc4da;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.adsense-close:hover {
+    background-color: #252031;
+    color: #ffffff;
+}
+
+.ad-rail-close {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    z-index: 500;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid #362e48;
+    border-radius: 50%;
+    background-color: rgba(23, 20, 32, 0.85);
+    color: #cbc4da;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.ad-rail-close:hover {
+    background-color: #252031;
+    color: #ffffff;
 }
 
 /* Mobile: lock the slot height so a late-loading ad can't shift the page. */

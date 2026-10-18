@@ -15,6 +15,7 @@ const MAIN_CSS: Asset = asset!(
 );
 
 fn main() {
+    snapshot::init_fetch();
     dioxus::launch(App);
 }
 

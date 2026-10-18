@@ -71,6 +71,11 @@ pub fn ContentPage(
     let nav = navigator();
 
     use_effect(move || {
+        // Deep links resolve against the snapshot; wait for it before consuming.
+        // Reading loaded() here re-runs the effect when the snapshot arrives.
+        if !snapshot::loaded() {
+            return;
+        }
         let query = match deep_link() {
             Some(link) => {
                 // Don't let a stale deep link leak into later route mounts.
@@ -149,9 +154,15 @@ pub fn ContentPage(
                     class: if dark_mode() { "content-topics-list" } else { "content-topics-list light-mode" },
 
                     if selected_tag().is_none() {
-                        for item in default_topics() {
-                            TopicLink { item: item.clone(), active_route: route.clone() }
+                        if default_topics().is_empty() && !snapshot::loaded() {
+                            div { class: "empty-state", "{snapshot::LOADING}" }
+                        } else {
+                            for item in default_topics() {
+                                TopicLink { item: item.clone(), active_route: route.clone() }
+                            }
                         }
+                    } else if !snapshot::loaded() {
+                        div { class: "empty-state", "{snapshot::LOADING}" }
                     } else if tag_content().is_empty() {
                         div { class: "empty-state", "{EMPTY_TOPICS}" }
                     } else {

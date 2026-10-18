@@ -30,6 +30,15 @@ const ADSENSE_WRAP_DARK_SUFFIX: &str = " adsense-wrap-dark";
 #[cfg(feature = "ads")]
 const ADSENSE_WRAP_LIGHT_SUFFIX: &str = " adsense-wrap-light";
 
+#[cfg(feature = "ads")]
+const CLOSE_BTN_CLASS: &str = "adsense-close";
+
+#[cfg(feature = "ads")]
+const CLOSE_BTN_LABEL: &str = "×";
+
+#[cfg(feature = "ads")]
+const CLOSE_BTN_ARIA: &str = "Close ad";
+
 /// Sentinel that marks an unset AdSense slot id. Public so callers can compare
 /// against it without hardcoding the value. Always available (no feature gate)
 /// so call sites don't need to gate their imports. Override the default via the
@@ -88,6 +97,10 @@ struct AdsenseArgs {
 
 #[cfg(feature = "ads")]
 fn render_adsense(args: AdsenseArgs) -> Element {
+    let mut visible = use_signal(|| true);
+    if !visible() {
+        return rsx! {};
+    }
     if ADSENSE_CLIENT_ID == PLACEHOLDER_CLIENT_ID {
         web_sys::console::warn_1(
             &"[adsense] ADSENSE_CLIENT_ID is unset; ad slot not rendered.".into(),
@@ -124,6 +137,12 @@ fn render_adsense(args: AdsenseArgs) -> Element {
 
     rsx! {
         div { class: "{ADSENSE_WRAP_CLASS}{wrap_class}",
+            button {
+                class: CLOSE_BTN_CLASS,
+                "aria-label": CLOSE_BTN_ARIA,
+                onclick: move |_| visible.set(false),
+                "{CLOSE_BTN_LABEL}"
+            }
             ins {
                 class: ins_class,
                 style: ins_style,
