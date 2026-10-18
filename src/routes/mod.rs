@@ -1,6 +1,4 @@
 use crate::components::{Footer, Header, Nav};
-use content_sdk::contexts::{ContentContext, ContentTagsContext, TagContext};
-use content_sdk::utils::config::Config;
 use dioxus::prelude::*;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
@@ -38,18 +36,6 @@ pub fn ProfileLayout() -> Element {
         route,
         Route::ContentPage {} | Route::ContentDetail { .. } | Route::Chat {}
     );
-
-    let config = use_hook(|| {
-        let mode = env!("APP_MODE");
-        let supabase_url = env!("SUPABASE_URL");
-        let supabase_anon_key = env!("SUPABASE_ANON_KEY");
-
-        Config::new(mode, supabase_url, supabase_anon_key, None, None)
-    });
-
-    use_context_provider(|| ContentContext::new(Some(config.clone())));
-    use_context_provider(|| TagContext::new(Some(config.clone())));
-    use_context_provider(|| ContentTagsContext::new(Some(config)));
 
     if is_standalone {
         rsx! {

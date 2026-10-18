@@ -3,12 +3,13 @@
 
 DX             := dx
 SITEMAP_SCRIPT := scripts/update-sitemap.mjs
+SNAPSHOT_SCRIPT := scripts/fetch-content-snapshot.mjs
 DIST_DIR       := dist/public
 
 # Root-level files that must be served un-hashed at exactly /<name>
 STATIC_FILES   := ads.txt robots.txt sitemap.xml
 
-.PHONY: help dev check test clean build sitemap prepare
+.PHONY: help dev check test clean snapshot sitemap prepare
 
 help:
 	@grep -E '^[a-z-]+:' $(MAKEFILE_LIST) | awk -F: '{print "  make " $$1}'
@@ -34,13 +35,18 @@ clean:
 sitemap:
 	node $(SITEMAP_SCRIPT)
 
-## build: sitemap scan + clean old dist + fresh release bundle + compose statics
-build: clean sitemap
+## snapshot: fetch all Supabase content into assets/content_snapshot.json
+snapshot:
+	node $(SNAPSHOT_SCRIPT)
+
+## build: snapshot + sitemap scan + clean old dist + fresh release bundle + compose statics
+build: clean snapshot sitemap
 	$(DX) bundle --release --out-dir ./dist
 	@for f in $(STATIC_FILES); do cp $$f $(DIST_DIR)/$$f; done
 	@cp assets/profile.jpg $(DIST_DIR)/og-image.jpg
+	@cp assets/content_snapshot.json $(DIST_DIR)/content_snapshot.json
 	@node scripts/generate-content-meta.mjs
-	@echo "Composed $(DIST_DIR): bundle + $(STATIC_FILES) + og-image.jpg + content meta pages"
+	@echo "Composed $(DIST_DIR): bundle + $(STATIC_FILES) + og-image.jpg + content_snapshot.json + content meta pages"
 
 ## prepare: alias of build (full production pipeline)
 prepare: build

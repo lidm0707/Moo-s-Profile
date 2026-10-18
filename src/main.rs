@@ -2,6 +2,7 @@ mod components;
 mod features;
 mod hooks;
 mod routes;
+mod snapshot;
 mod utils;
 
 use dioxus::prelude::*;

@@ -1,31 +1,22 @@
-use content_sdk::contexts::ContentTagsContext;
 use content_sdk::models::Content as ContentModel;
 use content_sdk::utils::render_markdown_to_html;
 use dioxus::prelude::*;
 
 use crate::components::Icon;
+use crate::snapshot;
 use crate::utils::copy_to_clipboard;
 
 const SHARE_HINT: &str = "Copy link";
 const COPIED_HINT: &str = "Copied!";
 
 #[component]
-pub fn InlineContentViewer(content: ContentModel, tags_ctx: ContentTagsContext) -> Element {
+pub fn InlineContentViewer(content: ContentModel) -> Element {
     let dark_mode = use_context::<Signal<bool>>();
 
-    let tags_resource = use_resource(move || {
-        let ctx = tags_ctx.clone();
-        let content_id = content.id;
-        async move {
-            if let Some(id) = content_id {
-                ctx.get_tags_for_content(id).await.unwrap_or_default()
-            } else {
-                vec![]
-            }
-        }
-    });
-
-    let tags = use_memo(move || tags_resource().clone().unwrap_or_default());
+    let tags = content
+        .id
+        .map(snapshot::tags_for_content)
+        .unwrap_or_default();
 
     let date_str = content
         .created_at
@@ -87,7 +78,7 @@ pub fn InlineContentViewer(content: ContentModel, tags_ctx: ContentTagsContext) 
             }
             div {
                 class: "content-viewer-tags",
-                for tag in tags() {
+                for tag in tags {
                     span { class: "content-tag", "{tag.name}" }
                 }
             }

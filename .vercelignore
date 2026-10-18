@@ -1,0 +1,8 @@
+# CLI deploys upload ONLY the built site + routing config.
+# Building happens locally via `make build` (needs Rust + dioxus-cli,
+# which Vercel's build image does not have).
+*
+!dist
+!dist/public
+!dist/public/**
+!vercel.json
