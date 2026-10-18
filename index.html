@@ -79,7 +79,35 @@
         </script>
     </head>
     <body>
+        <!-- Static splash overlay: paints instantly while the wasm downloads/boots.
+             Dioxus APPENDS into #main (it does not clear it), so the splash lives
+             outside #main and removes itself once the app renders its first node. -->
+        <div id="splash" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#14101c;color:#f5f2fa;font-family:system-ui,sans-serif;text-align:center;padding:24px;box-sizing:border-box">
+            <div>
+                <p style="font-size:12px;letter-spacing:2px;color:#9b8fb8;margin:0 0 16px">プロフィール · PROFILE</p>
+                <h1 style="font-size:48px;line-height:1.15;margin:0 0 16px">Hi there — I'm Moo!</h1>
+                <p style="font-size:16px;line-height:1.6;color:#b9aecf;margin:0;max-width:420px">I'm passionate about creating, learning, and innovating in the field of technology.</p>
+                <p style="font-size:14px;color:#8a7fa8;margin:16px 0 0">Loading…</p>
+            </div>
+        </div>
         <div id="main"></div>
+        <script>
+        (function () {
+            var main = document.getElementById('main');
+            var splash = document.getElementById('splash');
+            if (!main || !splash || !window.MutationObserver) { if (splash) splash.remove(); return; }
+            function drop() {
+                if (splash) { splash.remove(); splash = null; }
+                mo.disconnect();
+            }
+            var mo = new MutationObserver(function () {
+                if (main.querySelector('[data-node-hydration], h1, a, header, section')) { drop(); }
+            });
+            mo.observe(main, { childList: true, subtree: true });
+            // Safety net: never keep the splash up for more than 8s.
+            setTimeout(drop, 8000);
+        })();
+        </script>
         <div class="ad-rail">
             <!-- .ad-frame absorbs AdSense's parent style injection
                  (height:auto !important) so .ad-rail stays size-locked (CLS). -->

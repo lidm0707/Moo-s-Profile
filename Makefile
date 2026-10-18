@@ -64,7 +64,15 @@ ard:
 ## build: snapshot + sitemap scan + clean old dist + fresh release bundle + compose statics
 build: clean snapshot sitemap
 	$(DX) bundle --release --out-dir ./dist
+	@wasm_bin=$$(ls $(DIST_DIR)/assets/*.wasm 2>/dev/null | head -1); \
+	if [ -n "$$wasm_bin" ] && command -v wasm-opt >/dev/null 2>&1; then \
+		wasm-opt -Oz --enable-bulk-memory --enable-reference-types --enable-mutable-globals \
+			-o "$$wasm_bin" "$$wasm_bin" && echo "wasm-opt: shrunk $$wasm_bin"; \
+	else \
+		echo "wasm-opt: skipped (binaryen not installed)"; \
+	fi
 	@node scripts/minify-css.mjs
+	@node scripts/preload-wasm.mjs
 	@node $(LLMS_SCRIPT)
 	@node $(ARD_SCRIPT)
 	@for f in $(STATIC_FILES); do cp $$f $(DIST_DIR)/$$f; done
